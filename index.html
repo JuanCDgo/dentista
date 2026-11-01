@@ -1,0 +1,1937 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#F8FAFC">
+  <title>Odonto · Dr. Martín | App de Pacientes</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            clinical: {
+              50: '#F0FDFA',
+              100: '#CCFBF1',
+              200: '#99F6E4',
+              300: '#5EEAD4',
+              500: '#14B8A6',
+              600: '#0D9488',
+              700: '#0F766E',
+              800: '#115E59',
+              900: '#134E4A',
+            },
+            medicalSky: {
+              50: '#F0F9FF',
+              100: '#E0F2FE',
+              600: '#0284C7',
+              700: '#0369A1',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    * {
+      -webkit-tap-highlight-color: transparent;
+      box-sizing: border-box;
+    }
+    body {
+      background-color: #E6EEF2;
+      color: #1E293B;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    input, textarea, select {
+      user-select: text;
+      -webkit-user-select: text;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .clinical-card-shadow {
+      box-shadow: 0 4px 20px -2px rgba(15, 118, 110, 0.06), 0 2px 6px -1px rgba(15, 118, 110, 0.04);
+    }
+    .modal-backdrop {
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex justify-center items-start sm:py-6">
+
+  <!-- Main Mobile Frame Container -->
+  <div class="w-full max-w-md bg-[#F8FAFC] min-h-screen sm:min-h-[880px] sm:rounded-[36px] sm:shadow-2xl sm:border-[5px] sm:border-slate-800 flex flex-col relative overflow-hidden pb-8">
+    
+    <!-- ========================================== -->
+    <!-- VISTA 1: PANEL DEL ODONTÓLOGO (ADMIN)      -->
+    <!-- ========================================== -->
+    <div id="adminView" class="flex-1 flex flex-col">
+      <!-- Top Header Bar -->
+      <header class="pt-6 px-5 pb-4 bg-[#F8FAFC] sticky top-0 z-20 border-b border-slate-200/90">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-teal-500 to-cyan-500 p-0.5 shadow-md flex-shrink-0 cursor-pointer" onclick="openProfileModal()">
+              <div id="headerLogoContainer" class="w-full h-full bg-white rounded-full flex items-center justify-center overflow-hidden border border-teal-100">
+                <span class="text-2xl" id="profileAvatar">🦷</span>
+              </div>
+            </div>
+            <div>
+              <div class="flex flex-wrap items-center gap-1.5 cursor-pointer" onclick="openProfileModal()">
+                <h1 class="text-xl font-black tracking-tight text-slate-900" id="headerTitle">Odonto · Dr. Martín</h1>
+                <span id="turneroHeaderBadge" class="text-[10px] text-slate-500 bg-slate-200/90 px-2 py-0.5 rounded-full font-bold transition-colors">📅 Turnero OFF</span>
+              </div>
+              <p class="text-xs font-semibold text-teal-700 tracking-wide flex items-center gap-1.5" id="headerSubtitle">
+                <span>mis pacientes 🦷</span>
+                <span class="text-slate-300">·</span>
+                <span class="text-[11px] font-medium text-slate-500" id="argClock">🇦🇷 --:-- hs</span>
+              </p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <!-- Google Drive Backup Button -->
+            <button onclick="openBackupModal()" class="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center text-teal-600 hover:bg-teal-50 active:scale-95 transition-transform shadow-sm relative" title="Copia de seguridad en Google Drive">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path>
+              </svg>
+              <span id="backupStatusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-white absolute -top-0.5 -right-0.5 hidden"></span>
+            </button>
+
+            <!-- Config Button -->
+            <button onclick="openProfileModal()" class="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-50 active:scale-95 transition-transform shadow-sm" title="Ajustes y Turnero">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick Stats Metrics -->
+        <div class="grid grid-cols-3 gap-2 mt-4">
+          <div onclick="setFilter('all')" class="bg-white rounded-2xl p-2.5 border border-slate-200 shadow-sm text-center cursor-pointer hover:border-teal-400 transition-all">
+            <p class="text-[10px] uppercase tracking-wider font-bold text-slate-400">Total</p>
+            <p class="text-base font-black text-slate-800 mt-0.5" id="statTotalClients">0</p>
+          </div>
+          <div onclick="setFilter('due')" class="bg-amber-50 rounded-2xl p-2.5 border border-amber-200/80 shadow-sm text-center cursor-pointer hover:border-amber-400 transition-all">
+            <p class="text-[10px] uppercase tracking-wider font-bold text-amber-700">Toca Control</p>
+            <p class="text-base font-black text-amber-800 mt-0.5" id="statPendingTurn">0</p>
+          </div>
+          <div onclick="setFilter('debt')" class="bg-rose-50/70 rounded-2xl p-2.5 border border-rose-200 shadow-sm text-center cursor-pointer hover:border-rose-300 transition-all relative flex flex-col items-center justify-between" title="Toca para ver pacientes con saldo / presupuesto pendiente">
+            <p class="text-[10px] uppercase tracking-wider font-bold text-rose-700">Por Cobrar</p>
+            <div class="my-auto flex items-center justify-center py-1">
+              <span id="statPendingMoneyDot" class="w-3 h-3 rounded-full bg-emerald-500 shadow-sm ring-4 ring-emerald-500/20 inline-block"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Search Box + Top Nuevo Paciente Button -->
+        <div class="mt-3 flex items-center gap-2">
+          <div class="relative flex-1">
+            <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            <input 
+              type="text" 
+              id="searchInput" 
+              placeholder="Buscar paciente, tratamiento o pieza..." 
+              oninput="renderClients()"
+              class="w-full bg-white rounded-xl pl-9 pr-3 py-2.5 text-xs sm:text-sm border border-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500 placeholder:text-slate-400"
+            >
+          </div>
+          <button 
+            onclick="openAddModal()" 
+            class="bg-teal-600 hover:bg-teal-700 text-white px-3.5 py-2.5 rounded-xl font-black text-xs shadow-md active:scale-95 transition-all flex items-center gap-1.5 flex-shrink-0"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path>
+            </svg>
+            <span>Nuevo Paciente</span>
+          </button>
+        </div>
+
+        <!-- Filter Chips (Wrapped so none get cut off) -->
+        <div class="flex flex-wrap items-center gap-1.5 mt-3 pt-0.5">
+          <button onclick="setFilter('all')" id="filter-all" class="filter-pill px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap bg-teal-700 text-white transition-all shadow-sm">
+            Todos
+          </button>
+          <button onclick="setFilter('due')" id="filter-due" class="filter-pill px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap bg-white text-slate-600 border border-slate-200 transition-all">
+            ⏰ Toca Control
+          </button>
+          <button onclick="setFilter('ortho')" id="filter-ortho" class="filter-pill px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap bg-white text-slate-600 border border-slate-200 transition-all">
+            💎 Ortodoncia
+          </button>
+          <button onclick="setFilter('debt')" id="filter-debt" class="filter-pill px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap bg-white text-slate-600 border border-slate-200 transition-all">
+            💵 Con Saldo
+          </button>
+          <button onclick="setFilter('paid')" id="filter-paid" class="filter-pill px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap bg-white text-slate-600 border border-slate-200 transition-all">
+            ✓ Al Día
+          </button>
+        </div>
+      </header>
+
+      <!-- Clients List Section -->
+      <main class="flex-1 px-4 py-3 pb-8 space-y-3" id="clientsList">
+        <!-- Cards will be dynamically injected here -->
+      </main>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- VISTA 2: TURNERO ONLINE PARA EL PACIENTE   -->
+    <!-- ========================================== -->
+    <div id="clientBookingView" class="flex-1 flex flex-col hidden bg-[#F8FAFC]">
+      <!-- Barra superior de vista previa (solo si el odontólogo la está probando) -->
+      <div id="previewBanner" class="bg-teal-900 text-teal-100 px-4 py-2 text-xs font-bold flex items-center justify-between hidden">
+        <span>👁️ Vista previa del Turnero para Pacientes</span>
+        <button onclick="exitBookingPreview()" class="bg-white/20 hover:bg-white/30 px-2.5 py-1 rounded-lg font-black text-[11px] active:scale-95">
+          ← Volver a mis pacientes
+        </button>
+      </div>
+
+      <!-- Header del Turnero -->
+      <div class="pt-6 px-5 pb-4 bg-white border-b border-slate-200 shadow-sm">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-teal-500 to-cyan-500 p-0.5 shadow-md flex-shrink-0">
+            <div id="bookingLogoContainer" class="w-full h-full bg-white rounded-full flex items-center justify-center overflow-hidden border border-teal-100">
+              <span class="text-2xl">🦷</span>
+            </div>
+          </div>
+          <div>
+            <span class="text-[10px] uppercase tracking-wider font-black text-teal-700 bg-teal-100 px-2 py-0.5 rounded-full">Turnero Odontológico</span>
+            <h1 class="text-xl font-black text-slate-900 mt-0.5" id="bookingSalonTitle">Odonto · Dr. Martín</h1>
+            <p class="text-xs text-slate-500">Solicitá tu consulta o control en segundos 🦷</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cuerpo del Turnero -->
+      <div class="p-5 space-y-5 flex-1">
+        <!-- 1. Nombre del paciente -->
+        <div class="bg-white p-4 rounded-3xl border border-slate-200 clinical-card-shadow space-y-2">
+          <label class="block text-xs font-black uppercase tracking-wider text-teal-800">1. Nombre y Apellido</label>
+          <input 
+            type="text" 
+            id="bookingClientName" 
+            placeholder="Escribí tu nombre completo..." 
+            oninput="updateBookingSummary()"
+            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-teal-500 focus:outline-none text-sm font-bold bg-[#F8FAFC]"
+          >
+        </div>
+
+        <!-- 2. Motivo de Consulta / Tratamiento -->
+        <div class="bg-white p-4 rounded-3xl border border-slate-200 clinical-card-shadow space-y-3">
+          <label class="block text-xs font-black uppercase tracking-wider text-teal-800">2. Motivo de Consulta</label>
+          <div class="grid grid-cols-2 gap-2" id="bookingServiceButtons">
+            <button type="button" onclick="selectBookingService('Limpieza y Control')" data-srv="Limpieza y Control" class="booking-srv-btn p-2.5 rounded-xl border text-xs font-black text-left transition-all bg-teal-600 text-white border-teal-600 shadow-sm">
+              🦷 Limpieza y Control
+            </button>
+            <button type="button" onclick="selectBookingService('Control Ortodoncia')" data-srv="Control Ortodoncia" class="booking-srv-btn p-2.5 rounded-xl border text-xs font-black text-left transition-all bg-[#F8FAFC] text-slate-700 border-slate-200">
+              💎 Control Ortodoncia
+            </button>
+            <button type="button" onclick="selectBookingService('Consulta por Dolor / Carie')" data-srv="Consulta por Dolor / Carie" class="booking-srv-btn p-2.5 rounded-xl border text-xs font-black text-left transition-all bg-[#F8FAFC] text-slate-700 border-slate-200">
+              🩺 Dolor / Molestia
+            </button>
+            <button type="button" onclick="selectBookingService('Estética / Blanqueamiento')" data-srv="Estética / Blanqueamiento" class="booking-srv-btn p-2.5 rounded-xl border text-xs font-black text-left transition-all bg-[#F8FAFC] text-slate-700 border-slate-200">
+              ✨ Blanqueamiento
+            </button>
+          </div>
+          <input 
+            type="text" 
+            id="bookingServiceDetail" 
+            placeholder="Detalle o pieza (ej: Molestia en muela izquierda, caída de bracket...)" 
+            oninput="updateBookingSummary()"
+            class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-teal-500 focus:outline-none text-xs font-medium bg-[#F8FAFC]"
+          >
+        </div>
+
+        <!-- 3. Elegir Día -->
+        <div class="bg-white p-4 rounded-3xl border border-slate-200 clinical-card-shadow space-y-2.5">
+          <label class="block text-xs font-black uppercase tracking-wider text-teal-800">3. Elegí el Día</label>
+          <div class="flex gap-2 overflow-x-auto no-scrollbar pb-1" id="bookingDaysContainer">
+            <!-- Días generados dinámicamente -->
+          </div>
+        </div>
+
+        <!-- 4. Elegir Horario -->
+        <div class="bg-white p-4 rounded-3xl border border-slate-200 clinical-card-shadow space-y-2.5">
+          <label class="block text-xs font-black uppercase tracking-wider text-teal-800">4. Elegí el Horario (🇦🇷 hs)</label>
+          <div class="grid grid-cols-3 gap-2" id="bookingHoursContainer">
+            <!-- Horarios generados dinámicamente -->
+          </div>
+        </div>
+
+        <!-- Resumen de Turno -->
+        <div class="bg-teal-50/80 border border-teal-200 rounded-2xl p-3.5 text-xs text-teal-950 space-y-1" id="bookingSummaryBox">
+          <p class="font-black text-teal-800 uppercase text-[10px] tracking-wider">Resumen de tu turno:</p>
+          <p id="bookingSummaryText" class="font-semibold text-slate-700">Seleccioná día y horario arriba.</p>
+        </div>
+      </div>
+
+      <!-- Botón flotante Confirmar Turno por WhatsApp -->
+      <div class="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#F8FAFC] via-[#F8FAFC]/95 to-transparent z-20 flex items-center justify-center pointer-events-none">
+        <button 
+          onclick="confirmClientBookingWhatsApp()" 
+          class="pointer-events-auto w-full max-w-sm bg-[#25D366] hover:bg-[#20BA5A] text-white py-3.5 px-6 rounded-2xl font-black text-sm shadow-lg shadow-emerald-600/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+        >
+          <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+            <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.766-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.007c.106.005.249-.04.39.299.144.347.491 1.198.534 1.285.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.087-.179.182-.077.357.101.174.453.747.971 1.209.667.593 1.229.777 1.403.864.174.087.275.072.376-.044.101-.116.433-.506.549-.68.116-.174.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.044.073.044.42-.1.825zM12.012 2C6.489 2 2 6.488 2 12.011c0 1.99.585 3.847 1.597 5.419L2 22l4.71-1.547c1.517.944 3.303 1.488 5.302 1.488 5.523 0 10.012-4.488 10.012-10.011C22.024 6.488 17.535 2 12.012 2z"/>
+          </svg>
+          <span>Confirmar Turno por WhatsApp</span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MODAL: ADD / EDIT PATIENT -->
+  <div id="clientModal" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 modal-backdrop hidden transition-opacity">
+    <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl max-h-[92vh] overflow-y-auto no-scrollbar p-6 shadow-2xl flex flex-col">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <h2 class="text-lg font-black text-slate-900" id="modalTitle">Nuevo Paciente</h2>
+        <button onclick="closeClientModal()" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200">
+          ✕
+        </button>
+      </div>
+
+      <form id="clientForm" onsubmit="saveClient(event)" class="space-y-4 mt-4">
+        <input type="hidden" id="clientId">
+
+        <!-- Nombre -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Nombre y Apellido</label>
+          <input 
+            type="text" 
+            id="clientName" 
+            required 
+            placeholder="Ej: Santiago Pérez" 
+            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-teal-500 focus:outline-none text-sm font-semibold bg-white"
+          >
+        </div>
+
+        <!-- WhatsApp -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">WhatsApp (con código de área)</label>
+          <div class="flex">
+            <span class="inline-flex items-center px-3 rounded-l-xl border border-r-0 border-slate-200 bg-slate-50 text-slate-500 text-sm font-semibold">
+              +
+            </span>
+            <input 
+              type="tel" 
+              id="clientPhone" 
+              required 
+              placeholder="5491112345678" 
+              class="w-full px-3.5 py-2.5 rounded-r-xl border border-slate-200 focus:ring-2 focus:ring-teal-500 focus:outline-none text-sm font-semibold bg-white"
+            >
+          </div>
+          <p class="text-[11px] text-slate-400 mt-1">Ejemplo Argentina: 54911... (sin el 15 ni guiones)</p>
+        </div>
+
+        <!-- Servicios / Tratamiento Odontológico -->
+        <div class="bg-teal-50/50 p-3.5 rounded-2xl border border-teal-100 space-y-3">
+          <label class="block text-xs font-bold text-teal-900 uppercase tracking-wider">Tratamiento Odontológico</label>
+          
+          <div class="grid grid-cols-2 gap-2.5">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 mb-1">Tratamiento Principal</label>
+              <select id="clientTreatment" class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-teal-500 focus:outline-none text-xs font-bold bg-white text-slate-800">
+                <option value="Ortodoncia">💎 Ortodoncia (Brackets)</option>
+                <option value="Limpieza y Control">🦷 Limpieza y Profilaxis</option>
+                <option value="Conducto / Endodoncia">🩺 Endodoncia / Conducto</option>
+                <option value="Arreglo de Carie">✨ Restauración / Resina</option>
+                <option value="Implante / Prótesis">🔩 Implante o Prótesis</option>
+                <option value="Blanqueamiento">⭐ Blanqueamiento Dental</option>
+                <option value="Extracción">🏥 Cirugía / Extracción</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 mb-1">Pieza Dental / Zona</label>
+              <input 
+                type="text" 
+                id="clientToothArea" 
+                placeholder="Ej: Pieza 16, Arcada sup." 
+                class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-teal-500 focus:outline-none text-xs font-medium bg-white"
+              >
+            </div>
+          </div>
+
+          <!-- Alertas Médicas o Alergias -->
+          <div class="pt-2 border-t border-teal-100">
+            <label class="block text-[11px] font-bold text-slate-700 mb-1">⚠️ Alertas Médicas / Alergias (Opcional)</label>
+            <input 
+              type="text" 
+              id="clientMedicalAlert" 
+              placeholder="Ej: Alérgico a Penicilina, Látex, Presión alta (o vacío)" 
+              class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-teal-500 focus:outline-none text-xs font-medium bg-white placeholder:text-slate-400"
+            >
+          </div>
+        </div>
+
+        <!-- Fecha Último Control y Frecuencia -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Última Atención</label>
+            <input 
+              type="date" 
+              id="clientLastVisit" 
+              required 
+              class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-teal-500 focus:outline-none text-sm font-medium bg-white"
+            >
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Control Cada</label>
+            <select id="clientInterval" class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-teal-500 focus:outline-none text-sm font-medium bg-white">
+              <option value="3">3 semanas</option>
+              <option value="4" selected>4 semanas (Ortodoncia)</option>
+              <option value="6">6 semanas</option>
+              <option value="12">3 meses</option>
+              <option value="26">6 meses (Control anual/semestral)</option>
+              <option value="52">1 año</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Saldo / Presupuesto -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Estado de Cobro / Presupuesto</label>
+          <div class="grid grid-cols-2 gap-3 items-center">
+            <label class="flex items-center gap-2 p-2.5 border rounded-xl cursor-pointer hover:bg-slate-50 border-slate-200" id="paidOptionLabel">
+              <input type="radio" name="paymentState" value="paid" checked onchange="toggleDebtInput(false)">
+              <span class="text-sm font-bold text-emerald-700">✓ Al Día</span>
+            </label>
+            <label class="flex items-center gap-2 p-2.5 border rounded-xl cursor-pointer hover:bg-slate-50 border-slate-200" id="debtOptionLabel">
+              <input type="radio" name="paymentState" value="debt" onchange="toggleDebtInput(true)">
+              <span class="text-sm font-bold text-rose-600">Con Saldo</span>
+            </label>
+          </div>
+          <div id="debtAmountContainer" class="mt-2 hidden">
+            <div class="relative">
+              <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-rose-500 font-bold">$</span>
+              <input 
+                type="number" 
+                id="clientDebt" 
+                placeholder="Monto pendiente (ej: 15000)" 
+                class="w-full pl-8 pr-3.5 py-2 rounded-xl border border-rose-300 focus:ring-2 focus:ring-rose-400 focus:outline-none text-sm font-bold text-rose-700 bg-rose-50/50"
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Notas clínicas / Historia -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Historia Clínica / Notas de la sesión</label>
+          <textarea 
+            id="clientNotes" 
+            rows="2" 
+            placeholder="Ej: Cambio de arcos y ligaduras en sector superior. Paciente refiere molestia leve en molar 16." 
+            class="w-full px-3.5 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-teal-500 focus:outline-none text-xs font-normal bg-white"
+          ></textarea>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="pt-2 flex items-center gap-2">
+          <button 
+            type="button" 
+            onclick="deleteCurrentClient()" 
+            id="deleteClientBtn" 
+            class="w-1/3 py-3 rounded-xl border border-rose-200 text-rose-600 hover:bg-rose-50 font-bold text-xs transition-colors hidden"
+          >
+            Eliminar
+          </button>
+          <button 
+            type="submit" 
+            class="flex-1 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-black text-sm shadow-md transition-all active:scale-[0.99]"
+          >
+            Guardar Paciente
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: AJUSTES / CONSULTORIO -->
+  <div id="profileModal" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 modal-backdrop hidden transition-opacity">
+    <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl max-h-[92vh] overflow-y-auto no-scrollbar p-6 shadow-2xl flex flex-col space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <h2 class="text-lg font-black text-slate-900">Configurar Consultorio y Turnero</h2>
+        <button onclick="closeProfileModal()" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200">
+          ✕
+        </button>
+      </div>
+
+      <div class="space-y-4">
+        <!-- Logo / Foto del Consultorio -->
+        <div class="bg-teal-50/60 p-3.5 rounded-2xl border border-teal-200/80 flex items-center gap-3.5">
+          <div class="w-14 h-14 rounded-full bg-gradient-to-tr from-teal-500 to-cyan-500 p-0.5 shadow-md flex-shrink-0">
+            <div id="modalLogoPreview" class="w-full h-full bg-white rounded-full flex items-center justify-center overflow-hidden border border-teal-100">
+              <span class="text-2xl">🦷</span>
+            </div>
+          </div>
+          <div class="flex-1">
+            <label class="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1">Logo o Foto del Consultorio</label>
+            <div class="flex flex-wrap items-center gap-2">
+              <label class="cursor-pointer bg-white hover:bg-teal-50 text-teal-700 border border-teal-300 px-3 py-1.5 rounded-xl font-bold text-xs shadow-sm transition-all flex items-center gap-1 active:scale-95">
+                <span>📷 Subir Logo</span>
+                <input type="file" id="logoFileInput" accept="image/*" class="hidden" onchange="handleLogoUpload(event)">
+              </label>
+              <button 
+                type="button" 
+                id="btnRemoveLogo" 
+                onclick="removeSalonLogo()" 
+                class="text-xs text-rose-600 hover:text-rose-800 font-semibold px-2 py-1 rounded-lg hover:bg-rose-50 transition-colors hidden"
+              >
+                Quitar logo
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Nombre del Consultorio / Odontólogo</label>
+          <input 
+            type="text" 
+            id="salonNameInput" 
+            placeholder="Odonto · Dr. Martín" 
+            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-teal-500 focus:outline-none text-sm font-bold"
+          >
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Plantilla de WhatsApp</label>
+          <p class="text-[11px] text-slate-400 mb-1">Variables disponibles: <code class="bg-slate-100 text-teal-800 px-1 rounded">{nombre}</code>, <code class="bg-slate-100 text-teal-800 px-1 rounded">{semanas}</code>, <code class="bg-slate-100 text-teal-800 px-1 rounded">{servicio}</code></p>
+          <textarea 
+            id="messageTemplateInput" 
+            rows="2" 
+            class="w-full px-3.5 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-teal-500 focus:outline-none text-xs font-normal"
+          ></textarea>
+        </div>
+
+        <!-- SECCIÓN SWITCH TURNERO ONLINE (OPCIONAL) -->
+        <div class="bg-teal-50/70 border border-teal-200 rounded-2xl p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <div>
+              <span class="text-xs font-black uppercase tracking-wider text-teal-950 block">📅 Turnero Online (Opcional)</span>
+              <span class="text-[11px] text-teal-700/80">Que el paciente elija día y hora disponible</span>
+            </div>
+            <!-- Switch Toggle -->
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="bookingEnabledToggle" class="sr-only peer" onchange="toggleBookingConfigPanel(this.checked)">
+              <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+            </label>
+          </div>
+
+          <p id="bookingDisabledHint" class="text-[11px] text-slate-500 leading-relaxed">
+            <strong>Desactivado:</strong> Al tocar WhatsApp solo se envía el recordatorio de control, sin link de turnero.
+          </p>
+
+          <!-- Panel que se despliega solo cuando el Switch está Activo -->
+          <div id="bookingConfigPanel" class="space-y-3 pt-2 border-t border-teal-200/70 hidden">
+            <div>
+              <label class="block text-[11px] font-bold text-teal-950 uppercase mb-1">Tu WhatsApp del Consultorio</label>
+              <div class="flex">
+                <span class="inline-flex items-center px-3 rounded-l-xl border border-r-0 border-slate-200 bg-white text-slate-500 text-xs font-bold">+</span>
+                <input 
+                  type="tel" 
+                  id="salonPhoneInput" 
+                  placeholder="5491112345678" 
+                  class="w-full px-3 py-2 rounded-r-xl border border-slate-200 focus:ring-2 focus:ring-teal-500 focus:outline-none text-xs font-semibold bg-white"
+                >
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-bold text-teal-950 uppercase mb-1.5">Días de Atención</label>
+              <div class="flex flex-wrap gap-1.5" id="workDaysSelector">
+                <button type="button" onclick="toggleWorkDay(1)" data-day="1" class="workday-btn px-2.5 py-1.5 rounded-lg text-xs font-bold border transition-all">Lun</button>
+                <button type="button" onclick="toggleWorkDay(2)" data-day="2" class="workday-btn px-2.5 py-1.5 rounded-lg text-xs font-bold border transition-all">Mar</button>
+                <button type="button" onclick="toggleWorkDay(3)" data-day="3" class="workday-btn px-2.5 py-1.5 rounded-lg text-xs font-bold border transition-all">Mié</button>
+                <button type="button" onclick="toggleWorkDay(4)" data-day="4" class="workday-btn px-2.5 py-1.5 rounded-lg text-xs font-bold border transition-all">Jue</button>
+                <button type="button" onclick="toggleWorkDay(5)" data-day="5" class="workday-btn px-2.5 py-1.5 rounded-lg text-xs font-bold border transition-all">Vie</button>
+                <button type="button" onclick="toggleWorkDay(6)" data-day="6" class="workday-btn px-2.5 py-1.5 rounded-lg text-xs font-bold border transition-all">Sáb</button>
+                <button type="button" onclick="toggleWorkDay(0)" data-day="0" class="workday-btn px-2.5 py-1.5 rounded-lg text-xs font-bold border transition-all">Dom</button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2">
+              <div>
+                <label class="block text-[10px] font-bold text-teal-950 uppercase mb-1">Desde (hs)</label>
+                <select id="bookingStartHour" class="w-full px-2 py-2 rounded-xl border border-slate-200 text-xs font-semibold bg-white">
+                  <option value="8">08:00 hs</option>
+                  <option value="9" selected>09:00 hs</option>
+                  <option value="10">10:00 hs</option>
+                  <option value="12">12:00 hs</option>
+                  <option value="14">14:00 hs</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold text-teal-950 uppercase mb-1">Hasta (hs)</label>
+                <select id="bookingEndHour" class="w-full px-2 py-2 rounded-xl border border-slate-200 text-xs font-semibold bg-white">
+                  <option value="17">17:00 hs</option>
+                  <option value="18">18:00 hs</option>
+                  <option value="19" selected>19:00 hs</option>
+                  <option value="20">20:00 hs</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold text-teal-950 uppercase mb-1">Turnos cada</label>
+                <select id="bookingSlotMinutes" class="w-full px-2 py-2 rounded-xl border border-slate-200 text-xs font-semibold bg-white">
+                  <option value="30">30 min</option>
+                  <option value="45" selected>45 min</option>
+                  <option value="60">1 hora</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 pt-1">
+              <button 
+                type="button"
+                onclick="copyPublicBookingLink()" 
+                id="btnCopyBookingLink"
+                class="py-2 px-3 bg-white hover:bg-teal-50 text-teal-800 border border-teal-300 rounded-xl font-bold text-[11px] flex items-center justify-center gap-1 shadow-sm"
+              >
+                <span>🔗 Copiar Link Turnero</span>
+              </button>
+              <button 
+                type="button"
+                onclick="previewClientBooking()" 
+                class="py-2 px-3 bg-teal-100 hover:bg-teal-200 text-teal-900 rounded-xl font-bold text-[11px] flex items-center justify-center gap-1"
+              >
+                <span>👁️ Ver como Paciente</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-2 border-t border-slate-100 flex flex-col gap-2">
+          <button 
+            onclick="saveSettings()" 
+            class="w-full py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-black text-sm shadow-md transition-all active:scale-[0.99]"
+          >
+            Guardar Cambios
+          </button>
+          <button 
+            onclick="resetDemoData()" 
+            class="w-full py-2.5 text-xs text-slate-500 hover:text-slate-700 font-semibold"
+          >
+            Restaurar pacientes demo odontología
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: COPIA DE SEGURIDAD EN GOOGLE DRIVE -->
+  <div id="backupModal" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 modal-backdrop hidden transition-opacity">
+    <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl max-h-[92vh] overflow-y-auto no-scrollbar p-6 shadow-2xl flex flex-col space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div class="flex items-center gap-2">
+          <span class="w-8 h-8 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center font-bold">☁️</span>
+          <div>
+            <h2 class="text-base font-black text-slate-900 leading-tight">Copia de Seguridad</h2>
+            <p class="text-[11px] text-slate-400" id="lastBackupText">Sincronización automática activa</p>
+          </div>
+        </div>
+        <button onclick="closeBackupModal()" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200">
+          ✕
+        </button>
+      </div>
+
+      <!-- Sección 1: Copia Automática en Google Drive -->
+      <div class="bg-teal-50/70 border border-teal-200 rounded-2xl p-4 space-y-3">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span class="text-xs font-black uppercase tracking-wider text-teal-950">Google Drive Conectado</span>
+          </div>
+          <span id="cloudSyncBadge" class="text-[10px] font-black bg-teal-200/80 text-teal-900 px-2 py-0.5 rounded-full">Automático ✓</span>
+        </div>
+
+        <p class="text-xs text-teal-900/80 leading-relaxed">
+          Tus pacientes, historias clínicas, piezas y saldos se guardan automáticamente en la carpeta <strong>"Copia de seguridad Dentistas"</strong> de Google Drive en cada cambio.
+        </p>
+
+        <button 
+          onclick="syncToGoogleDriveNow(true)" 
+          id="btnSyncNow"
+          class="w-full py-3 px-4 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-bold text-xs shadow-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-all"
+        >
+          <span>☁️ Guardar Copia en Google Drive Ahora</span>
+        </button>
+      </div>
+
+      <!-- Sección 2: Descargar al Celular / PC o Planilla Excel -->
+      <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-2.5">
+        <span class="text-xs font-black uppercase tracking-wider text-slate-700 block">Opciones en tu dispositivo</span>
+
+        <button 
+          onclick="shareOrDownloadBackup()" 
+          class="w-full py-2.5 px-4 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-bold text-xs shadow-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-all"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+          </svg>
+          <span>Descargar Copia en Celular / PC</span>
+        </button>
+
+        <div class="grid grid-cols-2 gap-2 pt-1">
+          <button 
+            onclick="exportCSVForSheets()" 
+            class="py-2.5 px-3 bg-white hover:bg-slate-50 text-emerald-700 border border-emerald-200 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-all"
+          >
+            <span>📊 Planilla Excel</span>
+          </button>
+
+          <label class="py-2.5 px-3 bg-white hover:bg-slate-50 text-teal-700 border border-teal-200 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm cursor-pointer active:scale-95 transition-all">
+            <span>📥 Restaurar Copia</span>
+            <input type="file" accept=".json" class="hidden" onchange="importBackupFile(event)">
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: REGISTRAR ATENCIÓN HOY -->
+  <div id="quickTurnModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 modal-backdrop hidden">
+    <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4 text-center">
+      <div class="w-12 h-12 rounded-full bg-teal-100 text-teal-600 flex items-center justify-center mx-auto text-xl font-bold">
+        🦷
+      </div>
+      <div>
+        <h3 class="text-base font-black text-slate-900" id="quickTurnClientName">Atención realizada hoy</h3>
+        <p class="text-xs text-slate-500 mt-1">¿El paciente asistió hoy a consulta? Se actualizará su última visita a hoy y el contador de semanas volverá a cero.</p>
+      </div>
+
+      <div class="flex gap-2">
+        <button onclick="closeQuickTurnModal()" class="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-xs font-bold hover:bg-slate-50">
+          Cancelar
+        </button>
+        <button onclick="confirmQuickTurn()" class="flex-1 py-2.5 rounded-xl bg-teal-600 text-white text-xs font-black hover:bg-teal-700 shadow-md">
+          Sí, vino hoy ✓
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    // Pacientes demo representativos de odontología en Argentina
+    const DEFAULT_CLIENTS = [
+      {
+        id: '1',
+        name: 'Santiago Pérez',
+        phone: '5491138291044',
+        treatment: 'Ortodoncia',
+        toothArea: 'Bimaxilar',
+        medicalAlert: 'Sin alergias conocidas',
+        lastVisit: getDateWeeksAgo(4), // 4 weeks ago
+        intervalWeeks: 4,
+        debt: 15000,
+        notes: 'Control mensual ortodoncia metálica. Cambio de gomas y arco superior. Pendiente cuota mensual de $15.000.',
+        lastReminderSent: null
+      },
+      {
+        id: '2',
+        name: 'Valentina Rossi',
+        phone: '5491159382019',
+        treatment: 'Limpieza y Control',
+        toothArea: 'General',
+        medicalAlert: '',
+        lastVisit: getDateWeeksAgo(24), // 6 months ago
+        intervalWeeks: 26,
+        debt: 0,
+        notes: 'Limpieza con cavitador y cepillado profiláctico. Encías saludables. Control semestral de rutina cumplido.',
+        lastReminderSent: null
+      },
+      {
+        id: '3',
+        name: 'Mariano Gómez',
+        phone: '5491147289102',
+        treatment: 'Conducto / Endodoncia',
+        toothArea: 'Pieza 36',
+        medicalAlert: 'Alergia a la Penicilina',
+        lastVisit: getDateWeeksAgo(2), // 2 weeks ago
+        intervalWeeks: 3,
+        debt: 0,
+        notes: 'Primera sesión de endodoncia en molar 36. Medicación temporaria con hidróxido de calcio. Control para obturación final.',
+        lastReminderSent: null
+      },
+      {
+        id: '4',
+        name: 'Camila Benítez',
+        phone: '5491168492011',
+        treatment: 'Blanqueamiento',
+        toothArea: 'Sector anterior',
+        medicalAlert: 'Sensibilidad al frío',
+        lastVisit: getDateWeeksAgo(5), // 5 weeks ago
+        intervalWeeks: 6,
+        debt: 12000,
+        notes: 'Blanqueamiento LED en consultorio. Aplicación de gel desensibilizante. Pendiente saldo de $12.000.',
+        lastReminderSent: null
+      }
+    ];
+
+    const AUTO_DRIVE_WEBHOOK = 'https://script.google.com/macros/s/AKfycbzI2Bn0rj_MpW5lFhNJ2um2oEiwtSR4YRbfzedtoYL150rtvcKJ4go_bmLthl24xzMF2Q/exec';
+    const AUTO_DRIVE_FOLDER = 'Copia de seguridad Dentistas';
+    const AUTO_DRIVE_FOLDER_ID = '1JA9LIV_oQJBBDI1KDqKVbHbouUlFZDz2';
+
+    const DEFAULT_SETTINGS = {
+      salonName: 'Odonto · Dr. Martín',
+      salonLogo: '',
+      template: '¡Hola {nombre}! Ya pasaron {semanas} semanas de tu {servicio}, ¿te reservo turno para tu control odontológico?',
+      driveWebhookUrl: AUTO_DRIVE_WEBHOOK,
+      driveFolderName: AUTO_DRIVE_FOLDER,
+      autoSyncDrive: true,
+      lastBackupDate: null,
+      bookingEnabled: false,
+      salonPhone: '5491122334455',
+      workDays: [1, 2, 3, 4, 5], // Lun a Vie
+      bookingStartHour: 9,
+      bookingEndHour: 19,
+      bookingSlotMinutes: 45
+    };
+
+    function cleanWhatsAppText(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{FE00}-\u{FE0F}\u{1F900}-\u{1F9FF}]/gu, '')
+        .replace(/\uFFFD/g, '')
+        .replace(/  +/g, ' ')
+        .trim();
+    }
+
+    // State
+    let clients = JSON.parse(localStorage.getItem('dentista_clients')) || DEFAULT_CLIENTS;
+    let settings = Object.assign({}, DEFAULT_SETTINGS, JSON.parse(localStorage.getItem('dentista_settings') || '{}'));
+    if (!settings.driveWebhookUrl) {
+      settings.driveWebhookUrl = AUTO_DRIVE_WEBHOOK;
+    }
+    settings.autoSyncDrive = true;
+    settings.driveFolderName = AUTO_DRIVE_FOLDER;
+    if (settings.template) {
+      settings.template = cleanWhatsAppText(settings.template);
+    }
+    if (!Array.isArray(settings.workDays) || settings.workDays.length === 0) {
+      settings.workDays = [1, 2, 3, 4, 5];
+    }
+    let currentFilter = 'all';
+    let targetTurnClientId = null;
+
+    // Booking view state
+    let tempWorkDays = [...settings.workDays];
+    let bookingState = {
+      salonName: 'Odonto · Dr. Martín',
+      salonPhone: '',
+      workDays: [1, 2, 3, 4, 5],
+      startHour: 9,
+      endHour: 19,
+      slotMinutes: 45,
+      selectedService: 'Limpieza y Control',
+      selectedDateStr: '',
+      selectedDateLabel: '',
+      selectedHour: ''
+    };
+
+    function getDateWeeksAgo(weeks) {
+      const d = new Date();
+      d.setDate(d.getDate() - (weeks * 7));
+      return d.toISOString().split('T')[0];
+    }
+
+    function calculateWeeksAgo(dateStr) {
+      if (!dateStr) return 0;
+      const then = new Date(dateStr + 'T12:00:00');
+      const now = new Date();
+      const diffTime = Math.abs(now - then);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return Math.floor(diffDays / 7);
+    }
+
+    function formatDateAR(dateStr) {
+      if (!dateStr) return '';
+      const parts = dateStr.split('-');
+      if (parts.length === 3) {
+        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+      }
+      return new Date(dateStr).toLocaleDateString('es-AR', {
+        timeZone: 'America/Argentina/Buenos_Aires',
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+    }
+
+    function formatTimeAR(isoStr) {
+      if (!isoStr) return '';
+      return new Date(isoStr).toLocaleTimeString('es-AR', {
+        timeZone: 'America/Argentina/Buenos_Aires',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      }) + ' hs';
+    }
+
+    function formatCurrency(num) {
+      return '$ ' + new Intl.NumberFormat('es-AR', {
+        maximumFractionDigits: 0
+      }).format(Number(num) || 0);
+    }
+
+    function updateArgClock() {
+      const el = document.getElementById('argClock');
+      if (!el) return;
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('es-AR', {
+        timeZone: 'America/Argentina/Buenos_Aires',
+        day: '2-digit',
+        month: '2-digit'
+      });
+      const timeStr = now.toLocaleTimeString('es-AR', {
+        timeZone: 'America/Argentina/Buenos_Aires',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      });
+      el.textContent = `🇦🇷 ${dateStr} · ${timeStr} hs`;
+    }
+
+    function getClientFullServiceText(c) {
+      const parts = [];
+      if (c.treatment) parts.push(`Tratamiento de ${c.treatment}`);
+      if (c.toothArea) parts.push(`(${c.toothArea})`);
+      return parts.length > 0 ? parts.join(' ') : 'control';
+    }
+
+    function persistData(skipCloud = false) {
+      localStorage.setItem('dentista_clients', JSON.stringify(clients));
+      localStorage.setItem('dentista_settings', JSON.stringify(settings));
+      updateBackupBadge();
+      if (!skipCloud && settings.autoSyncDrive && settings.driveWebhookUrl) {
+        syncToGoogleDriveNow(false);
+      }
+    }
+
+    // Logo helpers
+    function updateSalonLogos() {
+      const headerContainer = document.getElementById('headerLogoContainer');
+      const bookingContainer = document.getElementById('bookingLogoContainer');
+      const modalPreview = document.getElementById('modalLogoPreview');
+      const removeBtn = document.getElementById('btnRemoveLogo');
+
+      const contentHtml = settings.salonLogo 
+        ? `<img src="${settings.salonLogo}" alt="Logo" class="w-full h-full object-cover">` 
+        : `<span class="text-2xl">🦷</span>`;
+
+      if (headerContainer) headerContainer.innerHTML = contentHtml;
+      if (bookingContainer) bookingContainer.innerHTML = contentHtml;
+      if (modalPreview) modalPreview.innerHTML = contentHtml;
+
+      if (removeBtn) {
+        if (settings.salonLogo) {
+          removeBtn.classList.remove('hidden');
+        } else {
+          removeBtn.classList.add('hidden');
+        }
+      }
+    }
+
+    function handleLogoUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          const maxDim = 280;
+          let width = img.width;
+          let height = img.height;
+          if (width > height) {
+            if (width > maxDim) {
+              height = Math.round((height * maxDim) / width);
+              width = maxDim;
+            }
+          } else {
+            if (height > maxDim) {
+              width = Math.round((width * maxDim) / height);
+              height = maxDim;
+            }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+
+          settings.salonLogo = dataUrl;
+          updateSalonLogos();
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+      event.target.value = '';
+    }
+
+    function removeSalonLogo() {
+      settings.salonLogo = '';
+      updateSalonLogos();
+    }
+
+    // Render Clients
+    function renderClients() {
+      const listEl = document.getElementById('clientsList');
+      const searchQuery = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+
+      let pendingTurnsCount = 0;
+      let totalDebtAmount = 0;
+
+      clients.forEach(c => {
+        const weeks = calculateWeeksAgo(c.lastVisit);
+        if (weeks >= (c.intervalWeeks || 4)) {
+          pendingTurnsCount++;
+        }
+        if (c.debt && c.debt > 0) {
+          totalDebtAmount += Number(c.debt);
+        }
+      });
+
+      document.getElementById('statTotalClients').textContent = clients.length;
+      document.getElementById('statPendingTurn').textContent = pendingTurnsCount;
+      const pendingDot = document.getElementById('statPendingMoneyDot');
+      if (pendingDot) {
+        if (totalDebtAmount > 0) {
+          pendingDot.className = 'w-3 h-3 rounded-full bg-emerald-500 shadow-sm ring-4 ring-emerald-500/20 inline-block';
+        } else {
+          pendingDot.className = 'w-2.5 h-2.5 rounded-full bg-slate-300 inline-block';
+        }
+      }
+
+      const filtered = clients.filter(c => {
+        const weeks = calculateWeeksAgo(c.lastVisit);
+        const interval = c.intervalWeeks || 4;
+        const matchesSearch = c.name.toLowerCase().includes(searchQuery) ||
+                              (c.treatment || '').toLowerCase().includes(searchQuery) ||
+                              (c.toothArea || '').toLowerCase().includes(searchQuery) ||
+                              (c.medicalAlert || '').toLowerCase().includes(searchQuery);
+        
+        if (!matchesSearch) return false;
+
+        if (currentFilter === 'due') {
+          return weeks >= interval;
+        } else if (currentFilter === 'ortho') {
+          return (c.treatment || '').toLowerCase().includes('ortodoncia');
+        } else if (currentFilter === 'debt') {
+          return c.debt && c.debt > 0;
+        } else if (currentFilter === 'paid') {
+          return !c.debt || c.debt === 0;
+        }
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        listEl.innerHTML = `
+          <div class="text-center py-12 px-4 bg-white/70 rounded-3xl border border-dashed border-slate-300 mt-4">
+            <span class="text-4xl block mb-2">🦷</span>
+            <p class="font-bold text-slate-700 text-sm">No se encontraron pacientes</p>
+            <p class="text-xs text-slate-400 mt-1">Prueba cambiando el filtro o agrega un nuevo paciente.</p>
+          </div>
+        `;
+        return;
+      }
+
+      listEl.innerHTML = filtered.map(c => {
+        const weeks = calculateWeeksAgo(c.lastVisit);
+        const interval = c.intervalWeeks || 4;
+        const isDue = weeks >= interval;
+        const hasDebt = c.debt && c.debt > 0;
+
+        return `
+          <div class="bg-white rounded-3xl p-4 clinical-card-shadow border border-slate-200/80 transition-all hover:border-teal-300">
+            <!-- Patient Top Info -->
+            <div class="flex items-start justify-between gap-2">
+              <div class="flex items-start gap-3">
+                <div class="w-11 h-11 rounded-2xl bg-teal-50 border border-teal-200 flex items-center justify-center flex-shrink-0 text-xl font-black text-teal-700 shadow-inner mt-0.5">
+                  ${c.name.charAt(0)}
+                </div>
+                <div>
+                  <div class="flex flex-wrap items-center gap-1.5">
+                    <h3 class="font-black text-slate-900 text-base leading-tight mr-0.5">${c.name}</h3>
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-teal-100 text-teal-800">
+                      🦷 ${c.treatment}
+                    </span>
+                    ${c.toothArea ? `
+                      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
+                        ${c.toothArea}
+                      </span>
+                    ` : ''}
+                    ${c.medicalAlert ? `
+                      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                        ⚠️ ${c.medicalAlert}
+                      </span>
+                    ` : ''}
+                  </div>
+                  <div class="flex flex-wrap items-center gap-1.5 mt-1.5">
+                    <span class="text-xs ${isDue ? 'text-amber-700 font-bold bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200' : 'text-slate-500 font-medium'}">
+                      ${weeks === 0 ? 'Atendido esta semana' : `Hace ${weeks} sem`} ${isDue ? '⏰' : ''}
+                    </span>
+                    <span class="text-[11px] text-slate-400 font-medium">
+                      (${formatDateAR(c.lastVisit)})
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Payment status badge -->
+              <div class="text-right flex-shrink-0">
+                ${hasDebt ? `
+                  <span class="inline-block px-2.5 py-1 rounded-full text-xs font-black bg-rose-50 text-rose-700 border border-rose-200/80">
+                    ${formatCurrency(c.debt)}
+                  </span>
+                ` : `
+                  <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/80">
+                    al día ✓
+                  </span>
+                `}
+              </div>
+            </div>
+
+            <!-- Notes preview if any -->
+            ${c.notes ? `
+              <div class="mt-2.5 text-[11px] text-slate-600 bg-slate-50 p-2 rounded-xl border border-slate-200 line-clamp-2">
+                <span class="font-bold text-slate-800">Historia:</span> ${c.notes}
+              </div>
+            ` : ''}
+
+            <!-- Bottom Actions -->
+            <div class="mt-3.5 pt-3 border-t border-slate-100 flex items-center gap-2">
+              <!-- Send WhatsApp Button -->
+              <button 
+                onclick="sendWhatsAppReminder('${c.id}')" 
+                class="flex-1 py-2.5 px-3 rounded-2xl font-black text-xs flex items-center justify-center gap-1.5 transition-all shadow-sm active:scale-[0.98] ${
+                  c.lastReminderSent 
+                    ? 'bg-emerald-50 text-emerald-800 border border-emerald-300 hover:bg-emerald-100' 
+                    : 'bg-[#25D366] text-white hover:bg-[#20BA5A]'
+                }"
+              >
+                <svg class="w-4 h-4 fill-current flex-shrink-0" viewBox="0 0 24 24">
+                  <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.766-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.007c.106.005.249-.04.39.299.144.347.491 1.198.534 1.285.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.087-.179.182-.077.357.101.174.453.747.971 1.209.667.593 1.229.777 1.403.864.174.087.275.072.376-.044.101-.116.433-.506.549-.68.116-.174.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.044.073.044.42-.1.825zM12.012 2C6.489 2 2 6.488 2 12.011c0 1.99.585 3.847 1.597 5.419L2 22l4.71-1.547c1.517.944 3.303 1.488 5.302 1.488 5.523 0 10.012-4.488 10.012-10.011C22.024 6.488 17.535 2 12.012 2z"/>
+                </svg>
+                <span>${c.lastReminderSent ? `Enviado ✓ ${formatTimeAR(c.lastReminderSent)}` : 'Enviar WhatsApp'}</span>
+              </button>
+
+              <!-- Quick Turn Registered Button -->
+              <button 
+                onclick="promptQuickTurn('${c.id}')" 
+                class="px-3 py-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 flex items-center gap-1 active:scale-95 transition-transform" 
+                title="Registrar que vino hoy"
+              >
+                <span>🦷 Vino hoy</span>
+              </button>
+
+              <!-- Edit Client Button -->
+              <button 
+                onclick="openEditModal('${c.id}')" 
+                class="p-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-2xl text-slate-500 hover:text-slate-800 active:scale-95 transition-transform" 
+                title="Editar ficha"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Filter Logic
+    function setFilter(filter) {
+      currentFilter = filter;
+      document.querySelectorAll('.filter-pill').forEach(btn => {
+        btn.classList.remove('bg-teal-700', 'text-white', 'shadow-sm');
+        btn.classList.add('bg-white', 'text-slate-600', 'border', 'border-slate-200');
+      });
+      const activeBtn = document.getElementById(`filter-${filter}`);
+      if (activeBtn) {
+        activeBtn.classList.remove('bg-white', 'text-slate-600', 'border', 'border-slate-200');
+        activeBtn.classList.add('bg-teal-700', 'text-white', 'shadow-sm');
+      }
+      renderClients();
+    }
+
+    // WhatsApp Action
+    function sendWhatsAppReminder(clientId) {
+      const client = clients.find(c => c.id === clientId);
+      if (!client) return;
+
+      const weeks = calculateWeeksAgo(client.lastVisit);
+      const serviceSummary = getClientFullServiceText(client);
+      let text = settings.template
+        .replace('{nombre}', client.name)
+        .replace('{semanas}', weeks > 0 ? weeks : 'un par de')
+        .replace('{servicio}', serviceSummary);
+
+      text = cleanWhatsAppText(text);
+
+      if (settings.bookingEnabled) {
+        const bookingUrl = buildBookingUrl(client);
+        text += `\n\nPodés elegir tu día y horario acá:\n${bookingUrl}`;
+      }
+
+      let phone = (client.phone || '').replace(/[^0-9]/g, '');
+
+      client.lastReminderSent = new Date().toISOString();
+      persistData();
+      renderClients();
+
+      const waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+      window.open(waUrl, '_blank');
+    }
+
+    // Quick Turn Action ("Vino hoy")
+    function promptQuickTurn(clientId) {
+      const client = clients.find(c => c.id === clientId);
+      if (!client) return;
+      targetTurnClientId = clientId;
+      document.getElementById('quickTurnClientName').textContent = `¿Registrar atención hoy para ${client.name}?`;
+      document.getElementById('quickTurnModal').classList.remove('hidden');
+    }
+
+    function closeQuickTurnModal() {
+      document.getElementById('quickTurnModal').classList.add('hidden');
+      targetTurnClientId = null;
+    }
+
+    function confirmQuickTurn() {
+      if (!targetTurnClientId) return;
+      const client = clients.find(c => c.id === targetTurnClientId);
+      if (client) {
+        client.lastVisit = new Date().toISOString().split('T')[0];
+        client.lastReminderSent = null;
+        persistData();
+        renderClients();
+      }
+      closeQuickTurnModal();
+    }
+
+    // Modal Add / Edit
+    function openAddModal() {
+      document.getElementById('modalTitle').textContent = 'Nuevo Paciente';
+      document.getElementById('clientId').value = '';
+      document.getElementById('clientName').value = '';
+      document.getElementById('clientPhone').value = '';
+      document.getElementById('clientTreatment').value = 'Ortodoncia';
+      document.getElementById('clientToothArea').value = '';
+      document.getElementById('clientMedicalAlert').value = '';
+      document.getElementById('clientLastVisit').value = new Date().toISOString().split('T')[0];
+      document.getElementById('clientInterval').value = '4';
+      document.getElementById('clientNotes').value = '';
+      document.getElementById('clientDebt').value = '';
+      document.querySelector('input[name="paymentState"][value="paid"]').checked = true;
+      toggleDebtInput(false);
+      document.getElementById('deleteClientBtn').classList.add('hidden');
+      document.getElementById('clientModal').classList.remove('hidden');
+    }
+
+    function openEditModal(clientId) {
+      const client = clients.find(c => c.id === clientId);
+      if (!client) return;
+
+      document.getElementById('modalTitle').textContent = `Editar ficha: ${client.name}`;
+      document.getElementById('clientId').value = client.id;
+      document.getElementById('clientName').value = client.name;
+      document.getElementById('clientPhone').value = client.phone || '';
+      document.getElementById('clientTreatment').value = client.treatment || 'Ortodoncia';
+      document.getElementById('clientToothArea').value = client.toothArea || '';
+      document.getElementById('clientMedicalAlert').value = client.medicalAlert || '';
+      document.getElementById('clientLastVisit').value = client.lastVisit || new Date().toISOString().split('T')[0];
+      document.getElementById('clientInterval').value = client.intervalWeeks || '4';
+      document.getElementById('clientNotes').value = client.notes || '';
+
+      const hasDebt = client.debt && client.debt > 0;
+      if (hasDebt) {
+        document.querySelector('input[name="paymentState"][value="debt"]').checked = true;
+        document.getElementById('clientDebt').value = client.debt;
+        toggleDebtInput(true);
+      } else {
+        document.querySelector('input[name="paymentState"][value="paid"]').checked = true;
+        document.getElementById('clientDebt').value = '';
+        toggleDebtInput(false);
+      }
+
+      document.getElementById('deleteClientBtn').classList.remove('hidden');
+      document.getElementById('clientModal').classList.remove('hidden');
+    }
+
+    function closeClientModal() {
+      document.getElementById('clientModal').classList.add('hidden');
+    }
+
+    function toggleDebtInput(show) {
+      const debtContainer = document.getElementById('debtAmountContainer');
+      if (show) {
+        debtContainer.classList.remove('hidden');
+      } else {
+        debtContainer.classList.add('hidden');
+        document.getElementById('clientDebt').value = '';
+      }
+    }
+
+    function saveClient(e) {
+      e.preventDefault();
+      const id = document.getElementById('clientId').value;
+      const isPaid = document.querySelector('input[name="paymentState"]:checked').value === 'paid';
+      const debtVal = isPaid ? 0 : Number(document.getElementById('clientDebt').value || 0);
+
+      const clientData = {
+        id: id || Date.now().toString(),
+        name: document.getElementById('clientName').value.trim(),
+        phone: document.getElementById('clientPhone').value.trim(),
+        treatment: document.getElementById('clientTreatment').value,
+        toothArea: document.getElementById('clientToothArea').value.trim(),
+        medicalAlert: document.getElementById('clientMedicalAlert').value.trim(),
+        lastVisit: document.getElementById('clientLastVisit').value,
+        intervalWeeks: Number(document.getElementById('clientInterval').value),
+        debt: debtVal,
+        notes: document.getElementById('clientNotes').value.trim(),
+        lastReminderSent: id ? (clients.find(c => c.id === id)?.lastReminderSent || null) : null
+      };
+
+      if (id) {
+        const index = clients.findIndex(c => c.id === id);
+        if (index !== -1) clients[index] = clientData;
+      } else {
+        clients.unshift(clientData);
+      }
+
+      persistData();
+      renderClients();
+      closeClientModal();
+    }
+
+    function deleteCurrentClient() {
+      const id = document.getElementById('clientId').value;
+      if (!id) return;
+      if (confirm('¿Eliminar este paciente de la lista?')) {
+        clients = clients.filter(c => c.id !== id);
+        persistData();
+        renderClients();
+        closeClientModal();
+      }
+    }
+
+    // Settings & Turnero Switch Modal
+    function updateTurneroHeaderBadge() {
+      const badge = document.getElementById('turneroHeaderBadge');
+      if (!badge) return;
+      if (settings.bookingEnabled) {
+        badge.textContent = '📅 Turnero ON';
+        badge.className = 'text-[10px] text-teal-800 bg-teal-100 border border-teal-300 px-2 py-0.5 rounded-full font-black transition-colors';
+      } else {
+        badge.textContent = '📅 Turnero OFF';
+        badge.className = 'text-[10px] text-slate-500 bg-slate-200/90 px-2 py-0.5 rounded-full font-bold transition-colors';
+      }
+    }
+
+    function toggleBookingConfigPanel(enabled) {
+      const panel = document.getElementById('bookingConfigPanel');
+      const hint = document.getElementById('bookingDisabledHint');
+      if (enabled) {
+        panel.classList.remove('hidden');
+        hint.classList.add('hidden');
+      } else {
+        panel.classList.add('hidden');
+        hint.classList.remove('hidden');
+      }
+    }
+
+    function renderWorkDaysButtons() {
+      document.querySelectorAll('.workday-btn').forEach(btn => {
+        const day = Number(btn.getAttribute('data-day'));
+        if (tempWorkDays.includes(day)) {
+          btn.className = 'workday-btn px-2.5 py-1.5 rounded-lg text-xs font-black border transition-all bg-teal-600 text-white border-teal-600 shadow-sm';
+        } else {
+          btn.className = 'workday-btn px-2.5 py-1.5 rounded-lg text-xs font-bold border transition-all bg-white text-slate-500 border-slate-200';
+        }
+      });
+    }
+
+    function toggleWorkDay(day) {
+      if (tempWorkDays.includes(day)) {
+        if (tempWorkDays.length > 1) {
+          tempWorkDays = tempWorkDays.filter(d => d !== day);
+        }
+      } else {
+        tempWorkDays.push(day);
+      }
+      renderWorkDaysButtons();
+    }
+
+    function openProfileModal() {
+      document.getElementById('salonNameInput').value = settings.salonName;
+      document.getElementById('messageTemplateInput').value = settings.template;
+      document.getElementById('bookingEnabledToggle').checked = Boolean(settings.bookingEnabled);
+      document.getElementById('salonPhoneInput').value = settings.salonPhone || '';
+      document.getElementById('bookingStartHour').value = settings.bookingStartHour || 9;
+      document.getElementById('bookingEndHour').value = settings.bookingEndHour || 19;
+      document.getElementById('bookingSlotMinutes').value = settings.bookingSlotMinutes || 45;
+      tempWorkDays = Array.isArray(settings.workDays) && settings.workDays.length ? [...settings.workDays] : [1, 2, 3, 4, 5];
+      renderWorkDaysButtons();
+      toggleBookingConfigPanel(Boolean(settings.bookingEnabled));
+      updateSalonLogos();
+      document.getElementById('profileModal').classList.remove('hidden');
+    }
+
+    function closeProfileModal() {
+      document.getElementById('profileModal').classList.add('hidden');
+    }
+
+    function saveSettings() {
+      const enabled = document.getElementById('bookingEnabledToggle').checked;
+      const phone = document.getElementById('salonPhoneInput').value.trim().replace(/[^0-9]/g, '');
+      if (enabled && !phone) {
+        alert('Por favor ingresa tu número de WhatsApp para recibir los turnos reservados por tus pacientes.');
+        return;
+      }
+
+      settings.salonName = document.getElementById('salonNameInput').value.trim() || 'Odonto · Dr. Martín';
+      settings.template = document.getElementById('messageTemplateInput').value.trim() || DEFAULT_SETTINGS.template;
+      settings.bookingEnabled = enabled;
+      settings.salonPhone = phone;
+      settings.workDays = [...tempWorkDays].sort();
+      settings.bookingStartHour = Number(document.getElementById('bookingStartHour').value) || 9;
+      settings.bookingEndHour = Number(document.getElementById('bookingEndHour').value) || 19;
+      settings.bookingSlotMinutes = Number(document.getElementById('bookingSlotMinutes').value) || 45;
+
+      document.getElementById('headerTitle').textContent = settings.salonName;
+      updateTurneroHeaderBadge();
+      updateSalonLogos();
+      persistData();
+      closeProfileModal();
+    }
+
+    function resetDemoData() {
+      if (confirm('¿Restaurar los pacientes de muestra de odontología?')) {
+        clients = DEFAULT_CLIENTS;
+        settings = Object.assign({}, DEFAULT_SETTINGS, {
+          driveWebhookUrl: settings.driveWebhookUrl,
+          autoSyncDrive: settings.autoSyncDrive,
+          bookingEnabled: settings.bookingEnabled,
+          salonPhone: settings.salonPhone
+        });
+        persistData();
+        document.getElementById('headerTitle').textContent = settings.salonName;
+        updateTurneroHeaderBadge();
+        updateSalonLogos();
+        closeProfileModal();
+        renderClients();
+      }
+    }
+
+    // ==========================================
+    // TURNERO ONLINE (OPCIÓN A - SELF BOOKING)
+    // ==========================================
+    function buildBookingUrl(client = null) {
+      const baseUrl = window.location.origin + window.location.pathname;
+      const params = new URLSearchParams();
+      params.set('reservar', '1');
+      params.set('s', settings.salonName || 'Odonto · Dr. Martín');
+      params.set('w', (settings.salonPhone || '').replace(/[^0-9]/g, ''));
+      params.set('d', (settings.workDays || [1,2,3,4,5]).join(','));
+      params.set('h', `${settings.bookingStartHour || 9}-${settings.bookingEndHour || 19}-${settings.bookingSlotMinutes || 45}`);
+      if (client) {
+        params.set('c', client.name);
+        if (client.treatment) {
+          if (client.treatment.includes('Ortodoncia')) {
+            params.set('cat', 'Control Ortodoncia');
+          } else if (client.treatment.includes('Blanqueamiento')) {
+            params.set('cat', 'Estética / Blanqueamiento');
+          } else if (client.treatment.includes('Conducto') || client.treatment.includes('Carie')) {
+            params.set('cat', 'Consulta por Dolor / Carie');
+          } else {
+            params.set('cat', 'Limpieza y Control');
+          }
+        }
+      }
+      return `${baseUrl}?${params.toString()}`;
+    }
+
+    function copyPublicBookingLink() {
+      settings.salonName = document.getElementById('salonNameInput').value.trim() || 'Odonto · Dr. Martín';
+      settings.salonPhone = document.getElementById('salonPhoneInput').value.trim().replace(/[^0-9]/g, '');
+      settings.workDays = [...tempWorkDays].sort();
+      settings.bookingStartHour = Number(document.getElementById('bookingStartHour').value) || 9;
+      settings.bookingEndHour = Number(document.getElementById('bookingEndHour').value) || 19;
+      settings.bookingSlotMinutes = Number(document.getElementById('bookingSlotMinutes').value) || 45;
+
+      const url = buildBookingUrl(null);
+      navigator.clipboard.writeText(url);
+      const btn = document.getElementById('btnCopyBookingLink');
+      btn.innerHTML = '<span>✓ ¡Link Copiado!</span>';
+      setTimeout(() => {
+        btn.innerHTML = '<span>🔗 Copiar Link Turnero</span>';
+      }, 2500);
+    }
+
+    function previewClientBooking() {
+      settings.salonName = document.getElementById('salonNameInput').value.trim() || 'Odonto · Dr. Martín';
+      settings.salonPhone = document.getElementById('salonPhoneInput').value.trim().replace(/[^0-9]/g, '') || '5491122334455';
+      settings.workDays = [...tempWorkDays].sort();
+      settings.bookingStartHour = Number(document.getElementById('bookingStartHour').value) || 9;
+      settings.bookingEndHour = Number(document.getElementById('bookingEndHour').value) || 19;
+      settings.bookingSlotMinutes = Number(document.getElementById('bookingSlotMinutes').value) || 45;
+      closeProfileModal();
+
+      initClientBookingView({
+        salonName: settings.salonName,
+        salonPhone: settings.salonPhone,
+        workDays: settings.workDays,
+        startHour: settings.bookingStartHour,
+        endHour: settings.bookingEndHour,
+        slotMinutes: settings.bookingSlotMinutes,
+        clientName: 'Santiago',
+        serviceCat: 'Control Ortodoncia',
+        serviceDetail: 'Bimaxilar',
+        isPreview: true
+      });
+    }
+
+    function exitBookingPreview() {
+      document.getElementById('clientBookingView').classList.add('hidden');
+      document.getElementById('adminView').classList.remove('hidden');
+      if (window.location.search.includes('reservar=1')) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    }
+
+    function initClientBookingView(cfg) {
+      bookingState.salonName = cfg.salonName || 'Odonto · Dr. Martín';
+      bookingState.salonPhone = cfg.salonPhone || '';
+      bookingState.workDays = cfg.workDays && cfg.workDays.length ? cfg.workDays : [1, 2, 3, 4, 5];
+      bookingState.startHour = cfg.startHour || 9;
+      bookingState.endHour = cfg.endHour || 19;
+      bookingState.slotMinutes = cfg.slotMinutes || 45;
+
+      document.getElementById('adminView').classList.add('hidden');
+      document.getElementById('clientBookingView').classList.remove('hidden');
+
+      const previewBanner = document.getElementById('previewBanner');
+      if (cfg.isPreview) {
+        previewBanner.classList.remove('hidden');
+      } else {
+        previewBanner.classList.add('hidden');
+      }
+
+      document.getElementById('bookingSalonTitle').textContent = bookingState.salonName;
+      document.getElementById('bookingClientName').value = cfg.clientName || '';
+      document.getElementById('bookingServiceDetail').value = cfg.serviceDetail || '';
+
+      const cleanCat = cleanWhatsAppText(cfg.serviceCat || 'Limpieza y Control') || 'Limpieza y Control';
+      selectBookingService(cleanCat);
+      renderBookingDays();
+      renderBookingHours();
+      updateBookingSummary();
+    }
+
+    function selectBookingService(srvName) {
+      bookingState.selectedService = cleanWhatsAppText(srvName) || 'Limpieza y Control';
+      document.querySelectorAll('.booking-srv-btn').forEach(btn => {
+        if (btn.getAttribute('data-srv') === bookingState.selectedService) {
+          btn.className = 'booking-srv-btn p-2.5 rounded-xl border text-xs font-black text-left transition-all bg-teal-600 text-white border-teal-600 shadow-sm';
+        } else {
+          btn.className = 'booking-srv-btn p-2.5 rounded-xl border text-xs font-black text-left transition-all bg-[#F8FAFC] text-slate-700 border-slate-200';
+        }
+      });
+      updateBookingSummary();
+    }
+
+    function renderBookingDays() {
+      const container = document.getElementById('bookingDaysContainer');
+      const dayNamesShort = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+      const dayNamesFull = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+      const availableDays = [];
+
+      const cursor = new Date();
+      for (let i = 1; i <= 25 && availableDays.length < 12; i++) {
+        const d = new Date();
+        d.setDate(cursor.getDate() + i);
+        const dow = d.getDay();
+        if (bookingState.workDays.includes(dow)) {
+          const dd = String(d.getDate()).padStart(2, '0');
+          const mm = String(d.getMonth() + 1).padStart(2, '0');
+          const yyyy = d.getFullYear();
+          const dateStr = `${dd}/${mm}/${yyyy}`;
+          const label = `${dayNamesFull[dow]} ${dd}/${mm}`;
+          availableDays.push({
+            dateStr,
+            shortDay: dayNamesShort[dow],
+            dayNum: dd,
+            monthNum: mm,
+            fullLabel: label
+          });
+        }
+      }
+
+      if (availableDays.length > 0 && !bookingState.selectedDateStr) {
+        bookingState.selectedDateStr = availableDays[0].dateStr;
+        bookingState.selectedDateLabel = availableDays[0].fullLabel;
+      }
+
+      container.innerHTML = availableDays.map(d => {
+        const isSelected = bookingState.selectedDateStr === d.dateStr;
+        return `
+          <button 
+            type="button"
+            onclick="selectBookingDay('${d.dateStr}', '${d.fullLabel}')"
+            class="flex-shrink-0 w-16 py-2.5 px-2 rounded-2xl border text-center transition-all ${
+              isSelected 
+                ? 'bg-teal-600 text-white border-teal-600 shadow-md scale-[1.02]' 
+                : 'bg-white text-slate-700 border-slate-200 hover:border-teal-400'
+            }"
+          >
+            <span class="block text-[10px] uppercase font-bold ${isSelected ? 'text-teal-100' : 'text-slate-400'}">${d.shortDay}</span>
+            <span class="block text-base font-black leading-tight mt-0.5">${d.dayNum}/${d.monthNum}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectBookingDay(dateStr, fullLabel) {
+      bookingState.selectedDateStr = dateStr;
+      bookingState.selectedDateLabel = fullLabel;
+      renderBookingDays();
+      updateBookingSummary();
+    }
+
+    function renderBookingHours() {
+      const container = document.getElementById('bookingHoursContainer');
+      const slots = [];
+      let currentMin = bookingState.startHour * 60;
+      const endMin = bookingState.endHour * 60;
+      const step = bookingState.slotMinutes || 45;
+
+      while (currentMin < endMin) {
+        const hh = String(Math.floor(currentMin / 60)).padStart(2, '0');
+        const mm = String(currentMin % 60).padStart(2, '0');
+        slots.push(`${hh}:${mm}`);
+        currentMin += step;
+      }
+
+      if (slots.length > 0 && !bookingState.selectedHour) {
+        bookingState.selectedHour = slots[0];
+      }
+
+      container.innerHTML = slots.map(h => {
+        const isSelected = bookingState.selectedHour === h;
+        return `
+          <button 
+            type="button"
+            onclick="selectBookingHour('${h}')"
+            class="py-2.5 px-2 rounded-xl border text-xs font-black transition-all ${
+              isSelected 
+                ? 'bg-teal-600 text-white border-teal-600 shadow-sm' 
+                : 'bg-white text-slate-700 border-slate-200 hover:border-teal-400'
+            }"
+          >
+            ${h} hs
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectBookingHour(hourStr) {
+      bookingState.selectedHour = hourStr;
+      renderBookingHours();
+      updateBookingSummary();
+    }
+
+    function updateBookingSummary() {
+      const name = (document.getElementById('bookingClientName').value || '').trim() || 'Paciente';
+      const detail = (document.getElementById('bookingServiceDetail').value || '').trim();
+      const srvText = detail ? `${bookingState.selectedService} (${detail})` : bookingState.selectedService;
+      const summaryEl = document.getElementById('bookingSummaryText');
+      if (summaryEl) {
+        summaryEl.innerHTML = `<strong class="text-teal-800">${name}</strong> · ${srvText}<br>📅 <strong>${bookingState.selectedDateLabel}</strong> a las <strong>${bookingState.selectedHour} hs</strong>`;
+      }
+    }
+
+    function confirmClientBookingWhatsApp() {
+      const name = (document.getElementById('bookingClientName').value || '').trim();
+      if (!name) {
+        alert('Por favor escribí tu nombre completo para confirmar el turno.');
+        document.getElementById('bookingClientName').focus();
+        return;
+      }
+
+      const detail = cleanWhatsAppText(document.getElementById('bookingServiceDetail').value || '');
+      const cleanSrv = cleanWhatsAppText(bookingState.selectedService);
+      const srvText = detail ? `${cleanSrv} (${detail})` : cleanSrv;
+      const cleanSalon = cleanWhatsAppText(bookingState.salonName);
+      const cleanClient = cleanWhatsAppText(name);
+
+      const msg = `¡Hola ${cleanSalon}! Soy *${cleanClient}*.\nQuiero solicitar un turno para atención odontológica:\n\n• *Motivo:* ${srvText}\n• *Día:* ${bookingState.selectedDateLabel}\n• *Horario:* ${bookingState.selectedHour} hs\n\n¿Me confirman disponibilidad? ¡Muchas gracias!`;
+
+      const phone = (bookingState.salonPhone || '').replace(/[^0-9]/g, '');
+      const waUrl = phone 
+        ? `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`
+        : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+      window.open(waUrl, '_blank');
+    }
+
+    // ==========================================
+    // GOOGLE DRIVE & BACKUP SYSTEM (AUTOMÁTICO)
+    // ==========================================
+    function updateBackupBadge() {
+      const dot = document.getElementById('backupStatusDot');
+      const lastText = document.getElementById('lastBackupText');
+      const badge = document.getElementById('cloudSyncBadge');
+
+      if (dot) {
+        dot.classList.remove('hidden');
+      }
+
+      if (lastText) {
+        if (settings.lastBackupDate) {
+          const d = new Date(settings.lastBackupDate);
+          const datePart = d.toLocaleDateString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires', day: '2-digit', month: '2-digit', year: 'numeric' });
+          const timePart = formatTimeAR(settings.lastBackupDate);
+          lastText.textContent = `Última copia: ${datePart} · ${timePart}`;
+        } else {
+          lastText.textContent = 'Sincronización automática activa';
+        }
+      }
+
+      if (badge) {
+        badge.textContent = 'Automático ✓';
+        badge.className = 'text-[10px] font-black bg-teal-200/80 text-teal-900 px-2 py-0.5 rounded-full';
+      }
+    }
+
+    function openBackupModal() {
+      updateBackupBadge();
+      document.getElementById('backupModal').classList.remove('hidden');
+    }
+
+    function closeBackupModal() {
+      document.getElementById('backupModal').classList.add('hidden');
+    }
+
+    async function shareOrDownloadBackup() {
+      const dateStr = new Date().toISOString().split('T')[0];
+      const fileName = `backup-dentista-${dateStr}.json`;
+      const payload = {
+        app: 'MicroApp Dentista',
+        version: '1.0',
+        exportedAt: new Date().toISOString(),
+        settings: settings,
+        clients: clients
+      };
+      const jsonStr = JSON.stringify(payload, null, 2);
+      const blob = new Blob([jsonStr], { type: 'application/json' });
+      const file = new File([blob], fileName, { type: 'application/json' });
+
+      settings.lastBackupDate = new Date().toISOString();
+      persistData(true);
+
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({
+            title: `Copia de Seguridad - ${settings.salonName}`,
+            text: `Respaldo de pacientes (${clients.length} historias) - ${dateStr}`,
+            files: [file]
+          });
+          return;
+        } catch (err) {
+          if (err.name === 'AbortError') return;
+        }
+      }
+
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function exportCSVForSheets() {
+      const dateStr = new Date().toISOString().split('T')[0];
+      const headers = ['Nombre y Apellido', 'WhatsApp', 'Tratamiento', 'Pieza / Zona', 'Alerta Medica', 'Ultima Atencion (AR)', 'Semanas Transcurridas', 'Control Cada (Sem)', 'Saldo Pendiente ($ ARS)', 'Historia Clinica'];
+      const rows = clients.map(c => [
+        `"${(c.name || '').replace(/"/g, '""')}"`,
+        `"${(c.phone || '').replace(/"/g, '""')}"`,
+        `"${(c.treatment || '-').replace(/"/g, '""')}"`,
+        `"${(c.toothArea || '-').replace(/"/g, '""')}"`,
+        `"${(c.medicalAlert || '-').replace(/"/g, '""')}"`,
+        `"${formatDateAR(c.lastVisit)}"`,
+        calculateWeeksAgo(c.lastVisit),
+        c.intervalWeeks || 4,
+        c.debt || 0,
+        `"${(c.notes || '').replace(/"/g, '""')}"`
+      ]);
+
+      const csvContent = '\uFEFF' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `pacientes-dentista-${dateStr}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function importBackupFile(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = JSON.parse(e.target.result);
+          const importedClients = Array.isArray(data) ? data : data.clients;
+          if (!Array.isArray(importedClients)) {
+            alert('El archivo no tiene un formato válido de pacientes.');
+            return;
+          }
+          if (confirm(`¿Restaurar ${importedClients.length} pacientes desde la copia de seguridad?`)) {
+            clients = importedClients;
+            if (data.settings && data.settings.salonName) {
+              settings.salonName = data.settings.salonName;
+              settings.salonLogo = data.settings.salonLogo || '';
+              settings.template = cleanWhatsAppText(data.settings.template || settings.template);
+              document.getElementById('headerTitle').textContent = settings.salonName;
+              updateSalonLogos();
+            }
+            settings.lastBackupDate = new Date().toISOString();
+            persistData(true);
+            renderClients();
+            closeBackupModal();
+            alert('¡Copia de seguridad restaurada con éxito!');
+          }
+        } catch (err) {
+          alert('Error al leer el archivo de respaldo.');
+        }
+        event.target.value = '';
+      };
+      reader.readAsText(file);
+    }
+
+    async function syncToGoogleDriveNow(manual = true) {
+      const webhookUrl = settings.driveWebhookUrl || AUTO_DRIVE_WEBHOOK;
+      if (!webhookUrl) return;
+
+      const btn = document.getElementById('btnSyncNow');
+      const originalText = btn ? btn.innerHTML : '';
+      if (manual && btn) btn.innerHTML = '<span>⏳ Guardando en Google Drive...</span>';
+
+      try {
+        const backupObj = {
+          app: 'MicroApp Dentista',
+          salonName: settings.salonName || 'Dentista',
+          exportedAt: new Date().toISOString(),
+          settings: settings,
+          clients: clients
+        };
+
+        const jsonStr = JSON.stringify(backupObj, null, 2);
+        const b64 = btoa(unescape(encodeURIComponent(jsonStr)));
+        const sello = new Date().toISOString().replace(/[-:T]/g, '').slice(0, 15);
+        const nombreLimpio = String(settings.salonName || 'Dentista').replace(/[^a-zA-Z0-9]/g, '_');
+
+        const payload = {
+          action: 'save',
+          folder: AUTO_DRIVE_FOLDER,
+          folderId: AUTO_DRIVE_FOLDER_ID,
+          filename: `datos_backup_${nombreLimpio}_${sello}.json`,
+          latest_filename: `datos_backup_${nombreLimpio}_ACTUAL.json`,
+          mimeType: 'application/json',
+          fileBase64: b64,
+          comercio: settings.salonName || 'Dentista',
+          timestamp: sello,
+          settings: settings,
+          clients: clients
+        };
+
+        await fetch(webhookUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+
+        settings.lastBackupDate = new Date().toISOString();
+        persistData(true);
+        if (manual) {
+          alert('¡Copia guardada con éxito en la carpeta "Copia de seguridad Dentistas" de Google Drive!');
+        }
+      } catch (err) {
+        if (manual) alert('Se guardó localmente. Se sincronizará con Google Drive apenas haya conexión.');
+      } finally {
+        if (manual && btn) btn.innerHTML = originalText;
+      }
+    }
+
+    // Init
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('headerTitle').textContent = settings.salonName;
+      updateTurneroHeaderBadge();
+      updateSalonLogos();
+      updateArgClock();
+      setInterval(updateArgClock, 30000);
+      updateBackupBadge();
+      renderClients();
+
+      if (navigator.onLine) {
+        setTimeout(() => syncToGoogleDriveNow(false), 2000);
+      }
+      window.addEventListener('online', () => syncToGoogleDriveNow(false));
+
+      // Turnero link (?reservar=1)
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('reservar') === '1') {
+        const daysParam = params.get('d');
+        const parsedDays = daysParam 
+          ? daysParam.split(',').map(Number).filter(n => !isNaN(n))
+          : (settings.workDays || [1, 2, 3, 4, 5]);
+
+        const hoursParam = (params.get('h') || '9-19-45').split('-');
+        initClientBookingView({
+          salonName: params.get('s') || settings.salonName || 'Odonto · Dr. Martín',
+          salonPhone: params.get('w') || settings.salonPhone || '',
+          workDays: parsedDays.length ? parsedDays : [1, 2, 3, 4, 5],
+          startHour: Number(hoursParam[0]) || 9,
+          endHour: Number(hoursParam[1]) || 19,
+          slotMinutes: Number(hoursParam[2]) || 45,
+          clientName: params.get('c') || '',
+          serviceCat: params.get('cat') || 'Limpieza y Control',
+          serviceDetail: params.get('srv') || '',
+          isPreview: false
+        });
+      }
+    });
+  </script>
+</body>
+</html>
