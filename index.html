@@ -15,6 +15,7 @@
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="qrcode.min.js"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -109,6 +110,11 @@
           </div>
 
           <div class="flex items-center gap-2">
+            <!-- Business QR Modal Button (Cobro Mostrador + Turnero QR) -->
+            <button onclick="openBusinessQrModal()" class="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center text-teal-600 hover:bg-teal-50 active:scale-95 transition-transform shadow-sm" title="Cobrar con QR / QR Turnero">
+              <span class="text-lg">📷</span>
+            </button>
+
             <!-- Google Drive Backup Button -->
             <button onclick="openBackupModal()" class="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center text-teal-600 hover:bg-teal-50 active:scale-95 transition-transform shadow-sm relative" title="Copia de seguridad en Google Drive">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -303,6 +309,339 @@
 
   </div>
 
+
+    <!-- ========================================== -->
+    <!-- VISTA 3: TARJETA DIGITAL DE PREVENCIÓN (PACIENTE) -->
+    <!-- ========================================== -->
+    <div id="clientLoyaltyView" class="flex-1 flex flex-col hidden bg-[#F8FAFC] min-h-screen sm:min-h-[880px] relative">
+      <!-- Banner de vista previa -->
+      <div id="loyaltyPreviewBanner" class="bg-teal-600 text-white px-4 py-2 text-xs font-black flex items-center justify-between hidden shadow-md">
+        <span>👁️ Vista Previa del Odontólogo</span>
+        <button onclick="closeLoyaltyPreview()" class="underline text-xs hover:text-teal-100">Cerrar vista previa ✕</button>
+      </div>
+
+      <!-- Top Accent Bar -->
+      <div class="h-2 w-full bg-gradient-to-r from-teal-500 via-cyan-500 to-teal-600"></div>
+
+      <!-- Canvas para confeti animado -->
+      <canvas id="loyaltyConfettiCanvas" class="absolute inset-0 pointer-events-none z-30 w-full h-full"></canvas>
+
+      <div class="p-5 flex-1 flex flex-col justify-between space-y-4 max-w-md mx-auto w-full">
+        <!-- Encabezado con Consultorio y Datos -->
+        <div class="text-center space-y-1.5 pt-2">
+          <div class="w-16 h-16 rounded-full p-0.5 shadow-lg mx-auto bg-gradient-to-tr from-teal-500 to-cyan-500">
+            <div id="loyaltyLogoContainer" class="w-full h-full bg-white rounded-full flex items-center justify-center overflow-hidden border border-teal-100">
+              <span class="text-3xl" id="loyaltyAvatar">🦷</span>
+            </div>
+          </div>
+          <h1 class="text-xl font-black text-slate-900 tracking-tight" id="loyaltySalonTitle">Odonto · Dr. Martín</h1>
+          <p class="text-[11px] font-bold uppercase tracking-widest text-teal-700 bg-teal-50 px-3 py-1 rounded-full border border-teal-200 inline-block">
+            Programa de Salud Bucal & Prevención
+          </p>
+        </div>
+
+        <!-- TARJETA DE SALUD BUCAL PRINCIPAL -->
+        <div class="bg-white rounded-3xl p-5 border-2 border-teal-500/40 shadow-xl relative overflow-hidden space-y-4">
+          <!-- Decoración sutil de fondo -->
+          <div class="absolute -right-6 -bottom-6 text-8xl text-teal-500/10 select-none pointer-events-none">🦷</div>
+
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div>
+              <span class="text-[10px] font-black uppercase tracking-wider text-slate-400 block">Pase Oficial</span>
+              <h2 class="text-lg font-black text-teal-900" id="loyaltyClientName">Paciente</h2>
+            </div>
+            <div class="text-right">
+              <span class="text-[10px] font-black uppercase tracking-wider text-slate-400 block">Controles al Día</span>
+              <span class="text-sm font-black text-teal-800 bg-teal-50 px-2.5 py-0.5 rounded-full border border-teal-200" id="loyaltyStampsRatio">2 / 3</span>
+            </div>
+          </div>
+
+          <!-- Cuadrícula interactiva de Sellos -->
+          <div>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 block mb-2 text-center">Tus controles semestrales</span>
+            <div id="loyaltyStampsGrid" class="grid grid-cols-3 gap-2.5 py-1">
+              <!-- Se generará dinámicamente -->
+            </div>
+          </div>
+
+          <!-- Barra de progreso -->
+          <div class="space-y-1.5 pt-1">
+            <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden border border-slate-200">
+              <div id="loyaltyProgressBar" class="h-full bg-gradient-to-r from-teal-500 to-cyan-500 transition-all duration-500 rounded-full" style="width: 66%;"></div>
+            </div>
+            <p class="text-center text-xs font-bold text-slate-600" id="loyaltyProgressHint">¡Llevás 2 controles! Te falta solo 1 para tu beneficio.</p>
+          </div>
+
+          <!-- Caja de Premio -->
+          <div id="loyaltyRewardBox" class="bg-teal-50/80 border border-teal-200 rounded-2xl p-3 text-center space-y-0.5">
+            <span class="text-[10px] font-black uppercase tracking-wider text-teal-800 block">★ Tu Beneficio de Prevención</span>
+            <p class="text-xs font-black text-slate-900" id="loyaltyRewardText">Limpieza Profunda y Profilaxis Sin Cargo</p>
+          </div>
+
+          <!-- Cartel de Premio Desbloqueado -->
+          <div id="loyaltyUnlockedBox" class="bg-gradient-to-r from-teal-600 to-cyan-600 text-white p-4 rounded-2xl text-center shadow-lg hidden space-y-1 animate-bounce">
+            <span class="text-2xl block">🎉</span>
+            <h3 class="text-base font-black uppercase tracking-tight">¡OBJETIVO DE SALUD CUMPLIDO!</h3>
+            <p class="text-xs font-bold leading-tight">Completaste tus controles preventivos. Presentá esta pantalla en el consultorio para recibir tu beneficio sin cargo.</p>
+          </div>
+        </div>
+
+        <!-- Botones de Acción para el Paciente -->
+        <div class="space-y-2 pt-2">
+          <!-- Botón de canje (visible solo si desbloqueó premio) -->
+          <button 
+            id="btnClaimRewardWhatsApp" 
+            onclick="claimLoyaltyRewardWhatsApp()" 
+            class="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-black text-xs uppercase tracking-wider rounded-2xl shadow-xl hover:from-emerald-600 hover:to-teal-700 transition-all active:scale-[0.98] hidden flex items-center justify-center gap-2"
+          >
+            <span>★ Canjear Beneficio por WhatsApp</span>
+          </button>
+
+          <!-- Botón de agendar próximo turno de control -->
+          <button 
+            id="btnLoyaltyBookNext" 
+            onclick="loyaltyBookNextTurn()" 
+            class="w-full py-3 bg-teal-600 hover:bg-teal-700 text-white font-black text-xs uppercase tracking-wider rounded-2xl shadow-md transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+          >
+            <span>📅 Agendar Próximo Control</span>
+          </button>
+
+          <!-- Guardar enlace o compartir tarjeta -->
+          <button 
+            onclick="shareMyLoyaltyCard()" 
+            class="w-full py-2.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-bold text-xs rounded-2xl transition-all flex items-center justify-center gap-1.5"
+          >
+            <span>📋 Guardar mi Pase en mi Celular</span>
+          </button>
+        </div>
+
+        <!-- Pie de página -->
+        <div class="text-center pt-2 pb-4">
+          <p class="text-[11px] text-slate-400">Consultorio Odontológico · Salud y Prevención</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  
+  <!-- ========================================== -->
+  <!-- MODAL: COBRAR CON QR / QR TURNERO MOSTRADOR -->
+  <!-- ========================================== -->
+  <div id="businessQrModal" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 modal-backdrop hidden transition-opacity">
+    <div class="bg-white border border-slate-200 text-slate-900 w-full max-w-md rounded-t-3xl sm:rounded-3xl max-h-[92vh] overflow-y-auto no-scrollbar p-6 shadow-2xl flex flex-col space-y-4">
+      
+      <!-- Encabezado con pestañas -->
+      <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">📱</span>
+          <div>
+            <h2 class="text-base font-extrabold text-slate-900" id="businessQrModalTitle">Cobrar con QR</h2>
+            <p class="text-[11px] text-slate-500 font-medium">Mercado Pago y Transferencias</p>
+          </div>
+        </div>
+        <button onclick="closeBusinessQrModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 font-bold flex items-center justify-center transition-all">
+          ✕
+        </button>
+      </div>
+
+      <!-- Pestañas: Cobro vs Turnero -->
+      <div class="flex border-b border-slate-100 gap-2">
+        <button type="button" onclick="switchQrModalTab('cobro')" id="qrTabBtn-cobro" class="pb-2 text-xs font-black border-b-2 border-teal-600 text-teal-700">
+          💳 Cobro por Transferencia
+        </button>
+        <button type="button" onclick="switchQrModalTab('turnero')" id="qrTabBtn-turnero" class="pb-2 text-xs font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-700">
+          📅 QR de tu Turnero
+        </button>
+      </div>
+
+      <!-- Solapa 1: Cobro con QR y Alias -->
+      <div id="qrContent-cobro" class="space-y-3">
+        <!-- Monto a Cobrar -->
+        <div class="bg-teal-50/60 p-3.5 rounded-2xl border border-teal-100 text-center">
+          <span class="text-[10px] uppercase font-bold text-teal-800 block mb-0.5" id="cobroClientLabel">Monto a Cobrar</span>
+          <div class="relative inline-block w-48">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-lg font-black text-teal-600">$</span>
+            <input 
+              type="number" 
+              step="any" 
+              id="cobroAmountInput" 
+              value="0" 
+              oninput="updateCobroQrLive()"
+              placeholder="0"
+              class="w-full pl-8 pr-2 py-1.5 rounded-xl border border-teal-200 font-black text-xl text-center text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-teal-500"
+            >
+          </div>
+
+          <!-- Montos rápidos sugeridos -->
+          <div class="flex items-center justify-center gap-1.5 mt-2.5">
+            <button type="button" onclick="setQuickCobroAmount(5000)" class="px-2.5 py-1 rounded-lg bg-white border border-teal-200 text-slate-700 hover:bg-teal-50 text-[11px] font-bold shadow-sm transition-all">+$5.000</button>
+            <button type="button" onclick="setQuickCobroAmount(10000)" class="px-2.5 py-1 rounded-lg bg-white border border-teal-200 text-slate-700 hover:bg-teal-50 text-[11px] font-bold shadow-sm transition-all">+$10.000</button>
+            <button type="button" onclick="setQuickCobroAmount(20000)" class="px-2.5 py-1 rounded-lg bg-white border border-teal-200 text-slate-700 hover:bg-teal-50 text-[11px] font-bold shadow-sm transition-all">+$20.000</button>
+            <button type="button" onclick="setQuickCobroAmount(0)" class="px-2 py-1 rounded-lg bg-white border border-slate-200 text-slate-500 hover:bg-slate-50 text-[11px] font-bold transition-all">Limpiar</button>
+          </div>
+        </div>
+
+        <!-- Código QR Interactivo de Cobro -->
+        <div class="flex flex-col items-center justify-center p-3 bg-white border border-slate-200 rounded-2xl shadow-sm">
+          <div id="cobroQrCodeContainer" class="p-2 bg-white rounded-xl shadow-inner flex items-center justify-center min-h-[190px] min-w-[190px]">
+            <!-- Código QR generado con QRCode.js -->
+          </div>
+          <p class="text-[11px] text-slate-400 mt-2 font-medium">El paciente escanea con la app de Mercado Pago o su banco</p>
+        </div>
+
+        <!-- Datos Bancarios / Alias -->
+        <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200 space-y-2">
+          <div class="flex items-center justify-between">
+            <div>
+              <span class="text-[10px] uppercase font-bold text-slate-400 block">Alias de Transferencia</span>
+              <span class="text-sm font-black text-teal-800" id="cobroDisplayAlias">odonto.martin.mp</span>
+            </div>
+            <button 
+              type="button" 
+              onclick="copyCobroAlias()" 
+              id="btnCopyCobroAlias"
+              class="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold shadow-sm active:scale-95 transition-all flex items-center gap-1"
+            >
+              <span>📋 Copiar Alias</span>
+            </button>
+          </div>
+          <div class="border-t border-slate-200/80 pt-1.5 flex items-center justify-between text-xs">
+            <span class="text-slate-500 font-medium">Titular:</span>
+            <span class="font-bold text-slate-800" id="cobroDisplayHolder">Dr. Martín Rodríguez</span>
+          </div>
+        </div>
+
+        <!-- Botón Marcar como Cobrado (si venimos de un paciente) -->
+        <button 
+          id="btnMarcarCobrado" 
+          onclick="markCurrentClientAsPaid()" 
+          class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black text-xs uppercase tracking-wider shadow-md active:scale-95 transition-all flex items-center justify-center gap-1.5 hidden"
+        >
+          <span>✓ Marcar Saldo como Cobrado</span>
+        </button>
+      </div>
+
+      <!-- Solapa 2: QR de Turnero para el Mostrador -->
+      <div id="qrContent-turnero" class="space-y-3 hidden">
+        <div class="bg-teal-50/60 p-3.5 rounded-2xl border border-teal-100 text-center space-y-1">
+          <span class="text-[10px] uppercase font-bold text-teal-800 block">QR para la Recepción</span>
+          <p class="text-xs text-slate-600">Imprimí o mostrá este QR en recepción para que los pacientes agenden su próximo control desde su celular.</p>
+        </div>
+
+        <div class="flex flex-col items-center justify-center p-3 bg-white border border-slate-200 rounded-2xl shadow-sm">
+          <div id="turneroQrCodeContainer" class="p-2 bg-white rounded-xl shadow-inner flex items-center justify-center min-h-[190px] min-w-[190px]">
+            <!-- QR Turnero generado con QRCode.js -->
+          </div>
+          <p class="text-[11px] font-bold text-slate-700 mt-2" id="turneroQrSalonName">Odonto · Dr. Martín</p>
+          <p class="text-[10px] text-slate-400 text-center px-4" id="turneroUrlText">https://juancdgo.github.io/dentista/?reservar=1</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <button 
+            type="button" 
+            onclick="copyPublicBookingLink()" 
+            class="py-2.5 px-3 bg-white hover:bg-teal-50 text-teal-800 border border-teal-300 rounded-xl font-bold text-xs flex items-center justify-center gap-1 shadow-sm active:scale-95 transition-all"
+          >
+            <span>🔗 Copiar Link</span>
+          </button>
+          <button 
+            type="button" 
+            onclick="previewClientBooking()" 
+            class="py-2.5 px-3 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-1 shadow-sm active:scale-95 transition-all"
+          >
+            <span>👁️ Probar Turnero</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL: PASE DE SALUD BUCAL Y FIDELIDAD PACIENTE -->
+  <!-- ========================================== -->
+  <div id="clientLoyaltyModal" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 modal-backdrop hidden transition-opacity">
+    <div class="bg-white border border-slate-200 text-slate-900 w-full max-w-md rounded-t-3xl sm:rounded-3xl max-h-[92vh] overflow-y-auto no-scrollbar p-6 shadow-2xl flex flex-col space-y-4">
+      
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">🦷</span>
+          <div>
+            <h2 class="text-base font-black text-slate-900" id="modalLoyaltyClientTitle">Pase de Salud Bucal</h2>
+            <p class="text-[11px] text-slate-500">Programa de Controles Semestrales</p>
+          </div>
+        </div>
+        <button onclick="closeClientLoyaltyModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 font-bold flex items-center justify-center transition-all">
+          ✕
+        </button>
+      </div>
+
+      <!-- Tarjeta resumen -->
+      <div class="bg-teal-50/50 rounded-2xl p-4 border border-teal-100 space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-slate-700">Controles acumulados:</span>
+          <span class="text-base font-black text-teal-800" id="modalLoyaltyCountText">2 / 3</span>
+        </div>
+
+        <!-- Stepper rápido para el odontólogo -->
+        <div class="flex items-center gap-2 pt-1">
+          <button type="button" onclick="adjustCurrentClientStamps(-1)" class="flex-1 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs active:scale-95 transition-all border border-slate-200 shadow-sm">
+            - Restar 1
+          </button>
+          <button type="button" onclick="adjustCurrentClientStamps(1)" class="flex-1 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs active:scale-95 transition-all shadow-md">
+            + Sumar Control 🦷
+          </button>
+        </div>
+
+        <!-- Botón de Canje de premio si completó los controles -->
+        <button 
+          id="btnRedeemRewardInModal" 
+          type="button" 
+          onclick="redeemCurrentClientReward()" 
+          class="w-full py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black text-xs rounded-xl shadow-lg active:scale-95 transition-all flex items-center justify-center gap-1.5 hidden"
+        >
+          <span>★ Canjear Beneficio de Prevención (Reiniciar)</span>
+        </button>
+      </div>
+
+      <!-- Compartir pase con el paciente -->
+      <div class="space-y-2">
+        <span class="text-[10px] uppercase font-bold text-slate-400 block">Compartir Pase con el Paciente</span>
+
+        <button 
+          type="button" 
+          onclick="sendCurrentClientLoyaltyWhatsApp()" 
+          class="w-full py-3 bg-[#25D366] hover:bg-[#20BA5A] text-white font-black text-xs rounded-xl shadow-md active:scale-95 transition-all flex items-center justify-center gap-2"
+        >
+          <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+            <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.766-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.007c.106.005.249-.04.39.299.144.347.491 1.198.534 1.285.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.087-.179.182-.077.357.101.174.453.747.971 1.209.667.593 1.229.777 1.403.864.174.087.275.072.376-.044.101-.116.433-.506.549-.68.116-.174.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.044.073.044.42-.1.825zM12.012 2C6.489 2 2 6.488 2 12.011c0 1.99.585 3.847 1.597 5.419L2 22l4.71-1.547c1.517.944 3.303 1.488 5.302 1.488 5.523 0 10.012-4.488 10.012-10.011C22.024 6.488 17.535 2 12.012 2z"/>
+          </svg>
+          <span>Enviar Pase por WhatsApp</span>
+        </button>
+
+        <div class="grid grid-cols-2 gap-2">
+          <button 
+            type="button" 
+            onclick="copyCurrentClientLoyaltyLink()" 
+            class="py-2.5 px-3 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-xl font-bold text-xs flex items-center justify-center gap-1 shadow-sm active:scale-95 transition-all"
+          >
+            <span>📋 Copiar Link</span>
+          </button>
+          <button 
+            type="button" 
+            onclick="previewCurrentClientLoyaltyView()" 
+            class="py-2.5 px-3 bg-teal-100 hover:bg-teal-200 text-teal-900 rounded-xl font-bold text-xs flex items-center justify-center gap-1 active:scale-95 transition-all"
+          >
+            <span>👁️ Ver como Paciente</span>
+          </button>
+        </div>
+
+        <p class="text-[10px] text-slate-400 truncate text-center pt-1" id="modalLoyaltyUrlDisplay"></p>
+      </div>
+    </div>
+  </div>
+
+
   <!-- MODAL: ADD / EDIT PATIENT -->
   <div id="clientModal" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 modal-backdrop hidden transition-opacity">
     <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl max-h-[92vh] overflow-y-auto no-scrollbar p-6 shadow-2xl flex flex-col">
@@ -437,6 +776,20 @@
         </div>
 
         <!-- Notas clínicas / Historia -->
+        
+        <!-- Programa de Prevención y Fidelización (Sellos) -->
+        <div class="bg-teal-50/60 p-3 rounded-2xl border border-teal-100 flex items-center justify-between">
+          <div>
+            <label class="block text-xs font-bold text-teal-950 uppercase">Controles Acumulados</label>
+            <span class="text-[11px] text-teal-700" id="clientStampsLabel">0 / 3 controles</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <button type="button" onclick="adjustModalStamps(-1)" class="w-8 h-8 rounded-xl bg-white border border-teal-200 text-slate-700 font-black text-sm hover:bg-slate-50">-</button>
+            <input type="number" id="clientStampsInput" value="0" min="0" max="30" class="w-12 text-center py-1 rounded-xl border border-teal-200 font-black text-sm bg-white" oninput="updateModalStampsLabel()">
+            <button type="button" onclick="adjustModalStamps(1)" class="w-8 h-8 rounded-xl bg-teal-600 text-white font-black text-sm hover:bg-teal-700 shadow-sm">+</button>
+          </div>
+        </div>
+
         <div>
           <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Historia Clínica / Notas de la sesión</label>
           <textarea 
@@ -523,6 +876,70 @@
             rows="2" 
             class="w-full px-3.5 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-teal-500 focus:outline-none text-xs font-normal"
           ></textarea>
+        </div>
+
+        
+        <!-- SECCIÓN COBROS Y TRANSFERENCIAS (QR / ALIAS) -->
+        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
+          <span class="text-xs font-black uppercase tracking-wider text-slate-900 block">💳 Cobro con QR y Transferencias</span>
+          <div class="grid grid-cols-2 gap-2.5">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1">Alias de Cobro</label>
+              <input 
+                type="text" 
+                id="paymentAliasInput" 
+                placeholder="odonto.martin.mp" 
+                class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-teal-500 focus:outline-none text-xs font-semibold bg-white"
+              >
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1">Titular de Cuenta</label>
+              <input 
+                type="text" 
+                id="paymentHolderInput" 
+                placeholder="Dr. Martín Rodríguez" 
+                class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-teal-500 focus:outline-none text-xs font-semibold bg-white"
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- SECCIÓN PROGRAMA DE SALUD BUCAL Y PREVENCIÓN -->
+        <div class="bg-teal-50/70 border border-teal-200 rounded-2xl p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <div>
+              <span class="text-xs font-black uppercase tracking-wider text-teal-950 block">🦷 Programa de Prevención Bucal</span>
+              <span class="text-[11px] text-teal-700/80">Fidelización por controles semestrales</span>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="loyaltyEnabledToggle" class="sr-only peer" onchange="toggleLoyaltyConfigPanel(this.checked)">
+              <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600"></div>
+            </label>
+          </div>
+
+          <div id="loyaltyConfigPanel" class="space-y-3 pt-2 border-t border-teal-200/80">
+            <div class="grid grid-cols-2 gap-2.5">
+              <div>
+                <label class="block text-[11px] font-bold text-teal-950 uppercase mb-1">Controles Requeridos</label>
+                <select id="loyaltyTargetInput" class="w-full px-2.5 py-2 rounded-xl border border-teal-200 text-xs font-bold bg-white text-slate-800">
+                  <option value="2">2 Controles (1 año)</option>
+                  <option value="3" selected>3 Controles (1 año y medio)</option>
+                  <option value="4">4 Controles (2 años)</option>
+                  <option value="6">6 Controles</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-[11px] font-bold text-teal-950 uppercase mb-1">Beneficio al Cumplir</label>
+                <input 
+                  type="text" 
+                  id="loyaltyRewardInput" 
+                  value="Limpieza Profunda y Profilaxis Sin Cargo" 
+                  placeholder="Ej: Limpieza Sin Cargo" 
+                  class="w-full px-3 py-2 rounded-xl border border-teal-200 focus:ring-2 focus:ring-teal-500 focus:outline-none text-xs font-semibold bg-white"
+                >
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- SECCIÓN SWITCH TURNERO ONLINE (OPCIONAL) -->
@@ -749,6 +1166,7 @@
         lastVisit: getDateWeeksAgo(4), // 4 weeks ago
         intervalWeeks: 4,
         debt: 15000,
+        stamps: 2,
         notes: 'Control mensual ortodoncia metálica. Cambio de gomas y arco superior. Pendiente cuota mensual de $15.000.',
         lastReminderSent: null
       },
@@ -762,6 +1180,7 @@
         lastVisit: getDateWeeksAgo(24), // 6 months ago
         intervalWeeks: 26,
         debt: 0,
+        stamps: 3,
         notes: 'Limpieza con cavitador y cepillado profiláctico. Encías saludables. Control semestral de rutina cumplido.',
         lastReminderSent: null
       },
@@ -775,6 +1194,7 @@
         lastVisit: getDateWeeksAgo(2), // 2 weeks ago
         intervalWeeks: 3,
         debt: 0,
+        stamps: 1,
         notes: 'Primera sesión de endodoncia en molar 36. Medicación temporaria con hidróxido de calcio. Control para obturación final.',
         lastReminderSent: null
       },
@@ -788,6 +1208,7 @@
         lastVisit: getDateWeeksAgo(5), // 5 weeks ago
         intervalWeeks: 6,
         debt: 12000,
+        stamps: 1,
         notes: 'Blanqueamiento LED en consultorio. Aplicación de gel desensibilizante. Pendiente saldo de $12.000.',
         lastReminderSent: null
       }
@@ -810,7 +1231,12 @@
       workDays: [1, 2, 3, 4, 5], // Lun a Vie
       bookingStartHour: 9,
       bookingEndHour: 19,
-      bookingSlotMinutes: 45
+      bookingSlotMinutes: 45,
+      paymentAlias: 'odonto.martin.mp',
+      paymentHolder: 'Dr. Martín Rodríguez',
+      loyaltyEnabled: true,
+      loyaltyTarget: 3,
+      loyaltyReward: 'Limpieza Profunda y Profilaxis Sin Cargo'
     };
 
     function cleanWhatsAppText(str) {
@@ -838,6 +1264,11 @@
     }
     let currentFilter = 'all';
     let targetTurnClientId = null;
+
+    let currentCobroClientId = null;
+    let currentLoyaltyClientId = null;
+    let currentLoyaltyState = {};
+
 
     // Booking view state
     let tempWorkDays = [...settings.workDays];
@@ -1062,11 +1493,15 @@
         return;
       }
 
+      const target = settings.loyaltyTarget || 3;
+
       listEl.innerHTML = filtered.map(c => {
         const weeks = calculateWeeksAgo(c.lastVisit);
         const interval = c.intervalWeeks || 4;
         const isDue = weeks >= interval;
         const hasDebt = c.debt && c.debt > 0;
+        const stamps = c.stamps || 0;
+        const isRewardUnlocked = stamps >= target;
 
         return `
           <div class="bg-white rounded-3xl p-4 clinical-card-shadow border border-slate-200/80 transition-all hover:border-teal-300">
@@ -1100,6 +1535,19 @@
                     <span class="text-[11px] text-slate-400 font-medium">
                       (${formatDateAR(c.lastVisit)})
                     </span>
+                    <!-- Prevention Checkup Progress Pill -->
+                    <button 
+                      onclick="openClientLoyaltyModal('${c.id}')" 
+                      class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold ${
+                        isRewardUnlocked 
+                          ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' 
+                          : 'bg-teal-50 text-teal-800 border border-teal-200'
+                      } hover:opacity-80 transition-opacity" 
+                      title="Ver Pase de Prevención Bucal"
+                    >
+                      <span>${isRewardUnlocked ? '★ ¡Premio Listo!' : '🦷 Controles:'}</span>
+                      <span>${stamps}/${target}</span>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -1107,9 +1555,9 @@
               <!-- Payment status badge -->
               <div class="text-right flex-shrink-0">
                 ${hasDebt ? `
-                  <span class="inline-block px-2.5 py-1 rounded-full text-xs font-black bg-rose-50 text-rose-700 border border-rose-200/80">
-                    ${formatCurrency(c.debt)}
-                  </span>
+                  <button onclick="openBusinessQrModal('${c.id}')" class="inline-block px-2.5 py-1 rounded-full text-xs font-black bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200/80 transition-colors" title="Cobrar con QR">
+                    ${formatCurrency(c.debt)} 💵
+                  </button>
                 ` : `
                   <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/80">
                     al día ✓
@@ -1126,11 +1574,11 @@
             ` : ''}
 
             <!-- Bottom Actions -->
-            <div class="mt-3.5 pt-3 border-t border-slate-100 flex items-center gap-2">
-              <!-- Send WhatsApp Button -->
+            <div class="mt-3.5 pt-3 border-t border-slate-100 flex flex-wrap items-center gap-2">
+              <!-- Send WhatsApp Reminder -->
               <button 
                 onclick="sendWhatsAppReminder('${c.id}')" 
-                class="flex-1 py-2.5 px-3 rounded-2xl font-black text-xs flex items-center justify-center gap-1.5 transition-all shadow-sm active:scale-[0.98] ${
+                class="flex-1 min-w-[120px] py-2.5 px-3 rounded-2xl font-black text-xs flex items-center justify-center gap-1.5 transition-all shadow-sm active:scale-[0.98] ${
                   c.lastReminderSent 
                     ? 'bg-emerald-50 text-emerald-800 border border-emerald-300 hover:bg-emerald-100' 
                     : 'bg-[#25D366] text-white hover:bg-[#20BA5A]'
@@ -1139,13 +1587,31 @@
                 <svg class="w-4 h-4 fill-current flex-shrink-0" viewBox="0 0 24 24">
                   <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.766-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.007c.106.005.249-.04.39.299.144.347.491 1.198.534 1.285.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.087-.179.182-.077.357.101.174.453.747.971 1.209.667.593 1.229.777 1.403.864.174.087.275.072.376-.044.101-.116.433-.506.549-.68.116-.174.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.044.073.044.42-.1.825zM12.012 2C6.489 2 2 6.488 2 12.011c0 1.99.585 3.847 1.597 5.419L2 22l4.71-1.547c1.517.944 3.303 1.488 5.302 1.488 5.523 0 10.012-4.488 10.012-10.011C22.024 6.488 17.535 2 12.012 2z"/>
                 </svg>
-                <span>${c.lastReminderSent ? `Enviado ✓ ${formatTimeAR(c.lastReminderSent)}` : 'Enviar WhatsApp'}</span>
+                <span>${c.lastReminderSent ? `Enviado ✓ ${formatTimeAR(c.lastReminderSent)}` : 'WhatsApp'}</span>
+              </button>
+
+              <!-- Pase de Fidelidad / Salud Bucal -->
+              <button 
+                onclick="openClientLoyaltyModal('${c.id}')" 
+                class="px-2.5 py-2.5 bg-teal-50 hover:bg-teal-100 border border-teal-200 rounded-2xl text-xs font-bold text-teal-800 flex items-center gap-1 active:scale-95 transition-transform" 
+                title="Pase de Controles y Beneficio"
+              >
+                <span>💳 Pase</span>
+              </button>
+
+              <!-- Cobrar con QR -->
+              <button 
+                onclick="openBusinessQrModal('${c.id}')" 
+                class="px-2.5 py-2.5 ${hasDebt ? 'bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100' : 'bg-slate-50 text-slate-700 border border-slate-200 hover:bg-slate-100'} rounded-2xl text-xs font-bold flex items-center gap-1 active:scale-95 transition-transform" 
+                title="Cobrar con QR / Transferencia"
+              >
+                <span>💵 QR</span>
               </button>
 
               <!-- Quick Turn Registered Button -->
               <button 
                 onclick="promptQuickTurn('${c.id}')" 
-                class="px-3 py-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 flex items-center gap-1 active:scale-95 transition-transform" 
+                class="px-2.5 py-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 flex items-center gap-1 active:scale-95 transition-transform" 
                 title="Registrar que vino hoy"
               >
                 <span>🦷 Vino hoy</span>
@@ -1231,8 +1697,15 @@
       if (client) {
         client.lastVisit = new Date().toISOString().split('T')[0];
         client.lastReminderSent = null;
+        client.stamps = (client.stamps || 0) + 1;
+        const target = settings.loyaltyTarget || 3;
         persistData();
         renderClients();
+        if (client.stamps >= target) {
+          showToast(`¡${client.name} completó ${client.stamps}/${target} controles preventivos!`, '★');
+        } else {
+          showToast(`Atención registrada: ${client.name} (${client.stamps}/${target} controles) ✓`, '🦷');
+        }
       }
       closeQuickTurnModal();
     }
@@ -1252,6 +1725,9 @@
       document.getElementById('clientDebt').value = '';
       document.querySelector('input[name="paymentState"][value="paid"]').checked = true;
       toggleDebtInput(false);
+      const stampsInput = document.getElementById('clientStampsInput');
+      if (stampsInput) stampsInput.value = '0';
+      updateModalStampsLabel();
       document.getElementById('deleteClientBtn').classList.add('hidden');
       document.getElementById('clientModal').classList.remove('hidden');
     }
@@ -1268,7 +1744,7 @@
       document.getElementById('clientToothArea').value = client.toothArea || '';
       document.getElementById('clientMedicalAlert').value = client.medicalAlert || '';
       document.getElementById('clientLastVisit').value = client.lastVisit || new Date().toISOString().split('T')[0];
-      document.getElementById('clientInterval').value = client.intervalWeeks || '4';
+      document.getElementById('clientInterval').value = client.intervalWeeks || 4;
       document.getElementById('clientNotes').value = client.notes || '';
 
       const hasDebt = client.debt && client.debt > 0;
@@ -1282,22 +1758,12 @@
         toggleDebtInput(false);
       }
 
+      const stampsInput = document.getElementById('clientStampsInput');
+      if (stampsInput) stampsInput.value = client.stamps || 0;
+      updateModalStampsLabel();
+
       document.getElementById('deleteClientBtn').classList.remove('hidden');
       document.getElementById('clientModal').classList.remove('hidden');
-    }
-
-    function closeClientModal() {
-      document.getElementById('clientModal').classList.add('hidden');
-    }
-
-    function toggleDebtInput(show) {
-      const debtContainer = document.getElementById('debtAmountContainer');
-      if (show) {
-        debtContainer.classList.remove('hidden');
-      } else {
-        debtContainer.classList.add('hidden');
-        document.getElementById('clientDebt').value = '';
-      }
     }
 
     function saveClient(e) {
@@ -1305,6 +1771,7 @@
       const id = document.getElementById('clientId').value;
       const isPaid = document.querySelector('input[name="paymentState"]:checked').value === 'paid';
       const debtVal = isPaid ? 0 : Number(document.getElementById('clientDebt').value || 0);
+      const stampsVal = Number(document.getElementById('clientStampsInput')?.value || 0);
 
       const clientData = {
         id: id || Date.now().toString(),
@@ -1317,6 +1784,7 @@
         intervalWeeks: Number(document.getElementById('clientInterval').value),
         debt: debtVal,
         notes: document.getElementById('clientNotes').value.trim(),
+        stamps: stampsVal,
         lastReminderSent: id ? (clients.find(c => c.id === id)?.lastReminderSent || null) : null
       };
 
@@ -1330,6 +1798,7 @@
       persistData();
       renderClients();
       closeClientModal();
+      showToast('Ficha del paciente guardada ✓', '🦷');
     }
 
     function deleteCurrentClient() {
@@ -1398,9 +1867,23 @@
       document.getElementById('bookingStartHour').value = settings.bookingStartHour || 9;
       document.getElementById('bookingEndHour').value = settings.bookingEndHour || 19;
       document.getElementById('bookingSlotMinutes').value = settings.bookingSlotMinutes || 45;
+
+      const aliasInput = document.getElementById('paymentAliasInput');
+      if (aliasInput) aliasInput.value = settings.paymentAlias || 'odonto.martin.mp';
+      const holderInput = document.getElementById('paymentHolderInput');
+      if (holderInput) holderInput.value = settings.paymentHolder || 'Dr. Martín Rodríguez';
+
+      const loyaltyToggle = document.getElementById('loyaltyEnabledToggle');
+      if (loyaltyToggle) loyaltyToggle.checked = settings.loyaltyEnabled !== false;
+      const targetInput = document.getElementById('loyaltyTargetInput');
+      if (targetInput) targetInput.value = settings.loyaltyTarget || 3;
+      const rewardInput = document.getElementById('loyaltyRewardInput');
+      if (rewardInput) rewardInput.value = settings.loyaltyReward || 'Limpieza Profunda y Profilaxis Sin Cargo';
+
       tempWorkDays = Array.isArray(settings.workDays) && settings.workDays.length ? [...settings.workDays] : [1, 2, 3, 4, 5];
       renderWorkDaysButtons();
       toggleBookingConfigPanel(Boolean(settings.bookingEnabled));
+      toggleLoyaltyConfigPanel(settings.loyaltyEnabled !== false);
       updateSalonLogos();
       document.getElementById('profileModal').classList.remove('hidden');
     }
@@ -1426,11 +1909,25 @@
       settings.bookingEndHour = Number(document.getElementById('bookingEndHour').value) || 19;
       settings.bookingSlotMinutes = Number(document.getElementById('bookingSlotMinutes').value) || 45;
 
+      const aliasInput = document.getElementById('paymentAliasInput');
+      if (aliasInput) settings.paymentAlias = aliasInput.value.trim() || 'odonto.martin.mp';
+      const holderInput = document.getElementById('paymentHolderInput');
+      if (holderInput) settings.paymentHolder = holderInput.value.trim() || 'Dr. Martín Rodríguez';
+
+      const loyaltyToggle = document.getElementById('loyaltyEnabledToggle');
+      if (loyaltyToggle) settings.loyaltyEnabled = loyaltyToggle.checked;
+      const targetInput = document.getElementById('loyaltyTargetInput');
+      if (targetInput) settings.loyaltyTarget = Number(targetInput.value) || 3;
+      const rewardInput = document.getElementById('loyaltyRewardInput');
+      if (rewardInput) settings.loyaltyReward = rewardInput.value.trim() || 'Limpieza Profunda y Profilaxis Sin Cargo';
+
       document.getElementById('headerTitle').textContent = settings.salonName;
       updateTurneroHeaderBadge();
       updateSalonLogos();
       persistData();
+      renderClients();
       closeProfileModal();
+      showToast('Ajustes del consultorio guardados ✓', '⚙️');
     }
 
     function resetDemoData() {
@@ -1899,6 +2396,577 @@
     }
 
     // Init
+    
+    // ==========================================
+    // TOAST NOTIFICATIONS
+    // ==========================================
+    function showToast(message, icon = '✓') {
+      let toast = document.getElementById('globalAppToast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'globalAppToast';
+        toast.className = 'fixed bottom-6 left-1/2 -translate-y-1/2 z-[100] px-4 py-2.5 bg-slate-900/95 text-white text-xs font-bold rounded-2xl shadow-2xl flex items-center gap-2 pointer-events-none transition-all duration-300 opacity-0 translate-y-4 border border-slate-700';
+        document.body.appendChild(toast);
+      }
+      toast.innerHTML = `<span class="text-base text-teal-400">${icon}</span> <span>${message}</span>`;
+      toast.classList.remove('opacity-0', 'translate-y-4');
+      toast.classList.add('opacity-100', 'translate-y-0');
+
+      clearTimeout(window.__toastTimeout);
+      window.__toastTimeout = setTimeout(() => {
+        toast.classList.remove('opacity-100', 'translate-y-0');
+        toast.classList.add('opacity-0', 'translate-y-4');
+      }, 3000);
+    }
+
+    // ==========================================
+    // PROGRAMA DE PREVENCIÓN: MODAL STAMPS STEPPER
+    // ==========================================
+    function toggleLoyaltyConfigPanel(enabled) {
+      const panel = document.getElementById('loyaltyConfigPanel');
+      if (panel) {
+        if (enabled) panel.classList.remove('hidden');
+        else panel.classList.add('hidden');
+      }
+    }
+
+    function adjustModalStamps(delta) {
+      const input = document.getElementById('clientStampsInput');
+      let val = (parseInt(input.value) || 0) + delta;
+      if (val < 0) val = 0;
+      if (val > 30) val = 30;
+      input.value = val;
+      updateModalStampsLabel();
+    }
+
+    function updateModalStampsLabel() {
+      const input = document.getElementById('clientStampsInput');
+      const label = document.getElementById('clientStampsLabel');
+      if (!input || !label) return;
+      const target = settings.loyaltyTarget || 3;
+      const val = parseInt(input.value) || 0;
+      label.textContent = `${val} / ${target} controles`;
+      if (val >= target) {
+        label.className = 'text-[11px] font-black text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-md border border-emerald-300';
+      } else {
+        label.className = 'text-[11px] text-teal-700 font-medium';
+      }
+    }
+
+    // ==========================================
+    // COBRO CON QR Y MOSTRADOR
+    // ==========================================
+    function openBusinessQrModal(clientId = null) {
+      currentCobroClientId = clientId;
+      const alias = settings.paymentAlias || 'odonto.martin.mp';
+      const holder = settings.paymentHolder || 'Dr. Martín Rodríguez';
+
+      const aliasEl = document.getElementById('cobroDisplayAlias');
+      if (aliasEl) aliasEl.textContent = alias;
+      const holderEl = document.getElementById('cobroDisplayHolder');
+      if (holderEl) holderEl.textContent = holder;
+      const salonNameEl = document.getElementById('turneroQrSalonName');
+      if (salonNameEl) salonNameEl.textContent = settings.salonName || 'Odonto · Dr. Martín';
+
+      const bookingUrl = buildBookingUrl(null);
+      const urlTextEl = document.getElementById('turneroUrlText');
+      if (urlTextEl) urlTextEl.textContent = bookingUrl;
+
+      const btnCobrado = document.getElementById('btnMarcarCobrado');
+      const labelClient = document.getElementById('cobroClientLabel');
+      const amountInput = document.getElementById('cobroAmountInput');
+
+      if (clientId) {
+        const c = clients.find(item => item.id === clientId);
+        if (c) {
+          if (labelClient) labelClient.textContent = `Saldo pendiente de ${c.name}:`;
+          if (amountInput) amountInput.value = c.debt || 0;
+          if (btnCobrado) btnCobrado.classList.remove('hidden');
+        }
+      } else {
+        if (labelClient) labelClient.textContent = 'Monto a Cobrar:';
+        if (amountInput) amountInput.value = '';
+        if (btnCobrado) btnCobrado.classList.add('hidden');
+      }
+
+      const modal = document.getElementById('businessQrModal');
+      if (modal) modal.classList.remove('hidden');
+
+      switchQrModalTab('cobro');
+      updateCobroQrLive();
+      generateTurneroQr(bookingUrl);
+    }
+
+    function openCobroModalForClient(clientId) {
+      openBusinessQrModal(clientId);
+    }
+
+    function closeBusinessQrModal() {
+      const modal = document.getElementById('businessQrModal');
+      if (modal) modal.classList.add('hidden');
+      currentCobroClientId = null;
+    }
+
+    function switchQrModalTab(tab) {
+      const btnCobro = document.getElementById('qrTabBtn-cobro');
+      const btnTurnero = document.getElementById('qrTabBtn-turnero');
+      const contentCobro = document.getElementById('qrContent-cobro');
+      const contentTurnero = document.getElementById('qrContent-turnero');
+
+      if (tab === 'cobro') {
+        if (btnCobro) btnCobro.className = 'pb-2 text-xs font-black border-b-2 border-teal-600 text-teal-700';
+        if (btnTurnero) btnTurnero.className = 'pb-2 text-xs font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-700';
+        if (contentCobro) contentCobro.classList.remove('hidden');
+        if (contentTurnero) contentTurnero.classList.add('hidden');
+      } else {
+        if (btnTurnero) btnTurnero.className = 'pb-2 text-xs font-black border-b-2 border-teal-600 text-teal-700';
+        if (btnCobro) btnCobro.className = 'pb-2 text-xs font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-700';
+        if (contentTurnero) contentTurnero.classList.remove('hidden');
+        if (contentCobro) contentCobro.classList.add('hidden');
+        generateTurneroQr(buildBookingUrl(null));
+      }
+    }
+
+    function setQuickCobroAmount(amount) {
+      const input = document.getElementById('cobroAmountInput');
+      if (!input) return;
+      if (amount === 0) {
+        input.value = '';
+      } else {
+        const cur = parseFloat(input.value) || 0;
+        input.value = cur + amount;
+      }
+      updateCobroQrLive();
+    }
+
+    function updateCobroQrLive() {
+      const alias = settings.paymentAlias || 'odonto.martin.mp';
+      const amountVal = document.getElementById('cobroAmountInput') ? document.getElementById('cobroAmountInput').value : 0;
+      const amount = parseFloat(amountVal) || 0;
+      
+      const qrData = amount > 0 
+        ? `https://mpago.la/transfer?alias=${encodeURIComponent(alias)}&amount=${amount}`
+        : `https://mpago.la/transfer?alias=${encodeURIComponent(alias)}`;
+
+      const container = document.getElementById('cobroQrCodeContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      let success = false;
+      try {
+        if (typeof QRCode !== 'undefined') {
+          new QRCode(container, {
+            text: qrData,
+            width: 190,
+            height: 190,
+            colorDark: '#0F172A',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.M
+          });
+          success = true;
+        }
+      } catch (err) {
+        console.warn('QRCode error, fallback QuickChart', err);
+      }
+
+      if (!success) {
+        container.innerHTML = `<img src="https://quickchart.io/qr?text=${encodeURIComponent(qrData)}&size=190" alt="QR Cobro" class="w-44 h-44 rounded-xl shadow-sm">`;
+      }
+    }
+
+    function generateTurneroQr(url) {
+      const container = document.getElementById('turneroQrCodeContainer');
+      if (!container) return;
+      container.innerHTML = '';
+      let success = false;
+      try {
+        if (typeof QRCode !== 'undefined') {
+          new QRCode(container, {
+            text: url,
+            width: 190,
+            height: 190,
+            colorDark: '#0F172A',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.M
+          });
+          success = true;
+        }
+      } catch (err) {
+        console.warn('QRCode turnero error', err);
+      }
+      if (!success) {
+        container.innerHTML = `<img src="https://quickchart.io/qr?text=${encodeURIComponent(url)}&size=190" alt="QR Turnero" class="w-44 h-44 rounded-xl shadow-sm">`;
+      }
+    }
+
+    function copyCobroAlias() {
+      const alias = settings.paymentAlias || 'odonto.martin.mp';
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(alias).then(() => {
+          showToast('Alias copiado: ' + alias, '📋');
+        }).catch(() => {
+          prompt('Copia el Alias:', alias);
+        });
+      } else {
+        prompt('Copia el Alias:', alias);
+      }
+    }
+
+    function markCurrentClientAsPaid() {
+      if (!currentCobroClientId) return;
+      const c = clients.find(item => item.id === currentCobroClientId);
+      if (c) {
+        c.debt = 0;
+        persistData();
+        renderClients();
+        closeBusinessQrModal();
+        showToast(`Saldo de ${c.name} marcado como cobrado ✓`, '💵');
+      }
+    }
+
+    // ==========================================
+    // PROGRAMA DE SALUD BUCAL Y PREVENCIÓN (FIDELIZACIÓN)
+    // ==========================================
+    function buildLoyaltyUrl(client) {
+      const isLocal = window.location.protocol === 'file:';
+      const base = isLocal ? 'https://juancdgo.github.io/dentista/' : (window.location.origin + window.location.pathname);
+      const params = new URLSearchParams();
+      params.set('fidelidad', '1');
+      params.set('c', client.name);
+      params.set('sellos', client.stamps || 0);
+      params.set('total', settings.loyaltyTarget || 3);
+      params.set('premio', settings.loyaltyReward || 'Limpieza Profunda y Profilaxis Sin Cargo');
+      params.set('s', settings.salonName || 'Odonto · Dr. Martín');
+      params.set('w', (settings.salonPhone || '').replace(/[^0-9]/g, ''));
+      return `${base}?${params.toString()}`;
+    }
+
+    function openClientLoyaltyModal(clientId) {
+      currentLoyaltyClientId = clientId;
+      const client = clients.find(c => c.id === clientId);
+      if (!client) return;
+
+      const target = settings.loyaltyTarget || 3;
+      const current = client.stamps || 0;
+
+      document.getElementById('modalLoyaltyClientTitle').textContent = `Pase de ${client.name}`;
+      document.getElementById('modalLoyaltyCountText').textContent = `${current} / ${target}`;
+
+      const btnRedeem = document.getElementById('btnRedeemRewardInModal');
+      if (current >= target) {
+        btnRedeem.classList.remove('hidden');
+        document.getElementById('modalLoyaltyCountText').className = 'text-base font-black text-emerald-800 bg-emerald-100 px-3 py-1 rounded-xl border border-emerald-300';
+      } else {
+        btnRedeem.classList.add('hidden');
+        document.getElementById('modalLoyaltyCountText').className = 'text-base font-black text-teal-800';
+      }
+
+      const loyaltyUrl = buildLoyaltyUrl(client);
+      document.getElementById('modalLoyaltyUrlDisplay').textContent = loyaltyUrl;
+
+      document.getElementById('clientLoyaltyModal').classList.remove('hidden');
+    }
+
+    function closeClientLoyaltyModal() {
+      document.getElementById('clientLoyaltyModal').classList.add('hidden');
+      currentLoyaltyClientId = null;
+    }
+
+    function adjustCurrentClientStamps(delta) {
+      if (!currentLoyaltyClientId) return;
+      const client = clients.find(c => c.id === currentLoyaltyClientId);
+      if (!client) return;
+
+      let val = (client.stamps || 0) + delta;
+      if (val < 0) val = 0;
+      if (val > 30) val = 30;
+      client.stamps = val;
+
+      persistData();
+      renderClients();
+      openClientLoyaltyModal(client.id);
+
+      const target = settings.loyaltyTarget || 3;
+      if (client.stamps >= target) {
+        showToast(`★ ¡${client.name} completó ${client.stamps}/${target} controles!`, '🏆');
+      } else {
+        showToast(`Controles de ${client.name}: ${client.stamps}/${target}`, '🦷');
+      }
+    }
+
+    function redeemCurrentClientReward() {
+      if (!currentLoyaltyClientId) return;
+      const client = clients.find(c => c.id === currentLoyaltyClientId);
+      if (!client) return;
+
+      const target = settings.loyaltyTarget || 3;
+      if (confirm(`¿Canjear el beneficio de prevención "${settings.loyaltyReward || 'Limpieza Profunda'}" para ${client.name}? El pase volverá a 0 controles para iniciar un nuevo ciclo.`)) {
+        client.stamps = 0;
+        persistData();
+        renderClients();
+        openClientLoyaltyModal(client.id);
+        showToast(`¡Beneficio canjeado para ${client.name}! Nuevo ciclo iniciado ✓`, '★');
+      }
+    }
+
+    function copyCurrentClientLoyaltyLink() {
+      if (!currentLoyaltyClientId) return;
+      const client = clients.find(c => c.id === currentLoyaltyClientId);
+      if (!client) return;
+
+      const url = buildLoyaltyUrl(client);
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(() => {
+          showToast('Enlace del pase copiado al portapapeles', '📋');
+        }).catch(() => {
+          prompt('Copia el link del pase:', url);
+        });
+      } else {
+        prompt('Copia el link del pase:', url);
+      }
+    }
+
+    function sendCurrentClientLoyaltyWhatsApp() {
+      if (!currentLoyaltyClientId) return;
+      const client = clients.find(c => c.id === currentLoyaltyClientId);
+      if (!client) return;
+
+      const phone = (client.phone || '').replace(/[^0-9]/g, '');
+      const passUrl = buildLoyaltyUrl(client);
+      const target = settings.loyaltyTarget || 3;
+      const stamps = client.stamps || 0;
+      const reward = settings.loyaltyReward || 'Limpieza Profunda y Profilaxis Sin Cargo';
+
+      // Clean text without 4-byte surrogate emojis (prevents replacement diamond on Windows WhatsApp Desktop)
+      const msg = `Hola *${client.name}*! Te compartimos tu Pase Digital del Programa de Prevencion Bucal de *${settings.salonName}*.
+
+` +
+                  `* Estado de Controles:* ${stamps} de ${target} completados
+` +
+                  `* Beneficio al cumplir:* ${reward}
+
+` +
+                  `Podes ver tu pase oficial y solicitar tu proximo control desde este link:
+` +
+                  `${passUrl}
+
+` +
+                  `Cualquier consulta estamos a tu disposicion!`;
+
+      if (phone) {
+        window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+      } else {
+        alert(msg);
+      }
+    }
+
+    function previewCurrentClientLoyaltyView() {
+      if (!currentLoyaltyClientId) return;
+      const client = clients.find(c => c.id === currentLoyaltyClientId);
+      if (!client) return;
+
+      closeClientLoyaltyModal();
+      initClientLoyaltyView({
+        salonName: settings.salonName || 'Odonto · Dr. Martín',
+        salonPhone: settings.salonPhone || '',
+        clientName: client.name,
+        stamps: client.stamps || 0,
+        target: settings.loyaltyTarget || 3,
+        reward: settings.loyaltyReward || 'Limpieza Profunda y Profilaxis Sin Cargo',
+        isPreview: true
+      });
+    }
+
+    // ==========================================
+    // VISTA DEL PACIENTE: PASE DIGITAL
+    // ==========================================
+    function initClientLoyaltyView(config) {
+      currentLoyaltyState = config;
+
+      document.getElementById('adminView').classList.add('hidden');
+      const bookingView = document.getElementById('clientBookingView');
+      if (bookingView) bookingView.classList.add('hidden');
+
+      const loyaltyView = document.getElementById('clientLoyaltyView');
+      loyaltyView.classList.remove('hidden');
+
+      const previewBanner = document.getElementById('loyaltyPreviewBanner');
+      if (config.isPreview) {
+        previewBanner.classList.remove('hidden');
+      } else {
+        previewBanner.classList.add('hidden');
+      }
+
+      document.getElementById('loyaltySalonTitle').textContent = config.salonName || 'Odonto · Dr. Martín';
+      document.getElementById('loyaltyClientName').textContent = config.clientName || 'Paciente';
+      document.getElementById('loyaltyRewardText').textContent = config.reward || 'Limpieza Profunda y Profilaxis Sin Cargo';
+
+      const target = parseInt(config.target) || 3;
+      const current = parseInt(config.stamps) || 0;
+      document.getElementById('loyaltyStampsRatio').textContent = `${current} / ${target}`;
+
+      // Render Stamps Grid
+      const grid = document.getElementById('loyaltyStampsGrid');
+      grid.innerHTML = '';
+      if (target <= 4) {
+        grid.className = 'grid grid-cols-3 gap-2.5 py-1';
+      } else {
+        grid.className = 'grid grid-cols-4 gap-2 py-1';
+      }
+
+      for (let i = 1; i <= target; i++) {
+        const isFilled = i <= current;
+        const slot = document.createElement('div');
+        slot.className = isFilled
+          ? 'aspect-square rounded-2xl bg-gradient-to-tr from-teal-500 to-cyan-500 text-white flex flex-col items-center justify-center shadow-md border border-teal-200 transition-all transform scale-100 hover:scale-105'
+          : 'aspect-square rounded-2xl bg-slate-50 border-2 border-dashed border-slate-200 flex flex-col items-center justify-center text-slate-300';
+
+        slot.innerHTML = isFilled
+          ? `<span class="text-2xl drop-shadow">🦷</span><span class="text-[9px] font-black uppercase text-teal-100 tracking-wider">Control ${i}</span>`
+          : `<span class="text-xl opacity-40">🦷</span><span class="text-[9px] font-bold text-slate-400">Control ${i}</span>`;
+
+        grid.appendChild(slot);
+      }
+
+      // Progress bar and hint
+      const percent = Math.min(100, Math.round((current / target) * 100));
+      document.getElementById('loyaltyProgressBar').style.width = `${percent}%`;
+
+      const hintEl = document.getElementById('loyaltyProgressHint');
+      const unlockedBox = document.getElementById('loyaltyUnlockedBox');
+      const rewardBox = document.getElementById('loyaltyRewardBox');
+      const btnClaim = document.getElementById('btnClaimRewardWhatsApp');
+
+      if (current >= target) {
+        hintEl.textContent = '¡Completaste tu ciclo de controles preventivos!';
+        hintEl.className = 'text-center text-xs font-black text-emerald-700';
+        unlockedBox.classList.remove('hidden');
+        rewardBox.classList.add('hidden');
+        btnClaim.classList.remove('hidden');
+        launchCardConfetti();
+      } else {
+        const remaining = target - current;
+        hintEl.textContent = `¡Llevás ${current} controles! Te falta${remaining === 1 ? '' : 'n'} solo ${remaining} para tu beneficio de prevención.`;
+        hintEl.className = 'text-center text-xs font-bold text-slate-600';
+        unlockedBox.classList.add('hidden');
+        rewardBox.classList.remove('hidden');
+        btnClaim.classList.add('hidden');
+      }
+
+      window.scrollTo(0, 0);
+    }
+
+    function closeLoyaltyPreview() {
+      document.getElementById('clientLoyaltyView').classList.add('hidden');
+      document.getElementById('adminView').classList.remove('hidden');
+      if (window.location.search.includes('fidelidad=1')) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    }
+
+    function claimLoyaltyRewardWhatsApp() {
+      const salon = currentLoyaltyState.salonName || 'Odonto · Dr. Martín';
+      const phone = (currentLoyaltyState.salonPhone || '').replace(/[^0-9]/g, '');
+      const client = currentLoyaltyState.clientName || 'Paciente';
+      const reward = currentLoyaltyState.reward || 'Limpieza Profunda y Profilaxis Sin Cargo';
+
+      const msg = `Hola! Soy *${client}*. Complete mis controles preventivos de salud bucal en *${salon}* 🦷.
+
+` +
+                  `Tendrias un turno disponible para coordinar mi beneficio: *${reward}*? Muchas gracias!`;
+
+      if (phone) {
+        window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+      } else {
+        alert(msg);
+      }
+    }
+
+    function loyaltyBookNextTurn() {
+      if (settings.bookingEnabled) {
+        initClientBookingView({
+          salonName: currentLoyaltyState.salonName || settings.salonName || 'Odonto · Dr. Martín',
+          salonPhone: currentLoyaltyState.salonPhone || settings.salonPhone || '',
+          workDays: settings.workDays || [1,2,3,4,5],
+          startHour: settings.bookingStartHour || 9,
+          endHour: settings.bookingEndHour || 19,
+          slotMinutes: settings.bookingSlotMinutes || 45,
+          clientName: currentLoyaltyState.clientName || '',
+          serviceCat: 'Limpieza y Control',
+          serviceDetail: '',
+          isPreview: currentLoyaltyState.isPreview || false
+        });
+      } else {
+        const phone = (currentLoyaltyState.salonPhone || '').replace(/[^0-9]/g, '');
+        const client = currentLoyaltyState.clientName || 'Paciente';
+        const msg = `Hola! Soy *${client}*. Queria consultar turnos disponibles para mi proximo control odontologico 🦷.`;
+        if (phone) {
+          window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+        } else {
+          alert('Por favor contactate con el consultorio para coordinar tu turno.');
+        }
+      }
+    }
+
+    function shareMyLoyaltyCard() {
+      const url = window.location.href;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(() => {
+          showToast('¡Enlace de tu pase copiado! Guardalo en tu WhatsApp.', '📋');
+        }).catch(() => {
+          alert(`Tu pase oficial: ${url}`);
+        });
+      } else {
+        alert(`Tu pase oficial: ${url}`);
+      }
+    }
+
+    function launchCardConfetti() {
+      const canvas = document.getElementById('loyaltyConfettiCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      canvas.width = canvas.parentElement.clientWidth || 360;
+      canvas.height = canvas.parentElement.clientHeight || 500;
+
+      const pieces = [];
+      const colors = ['#14B8A6', '#0D9488', '#0284C7', '#38BDF8', '#F59E0B', '#10B981'];
+      for (let i = 0; i < 70; i++) {
+        pieces.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * (canvas.height / 2),
+          size: Math.random() * 8 + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          speedY: Math.random() * 3 + 2,
+          speedX: Math.random() * 2 - 1,
+          rotation: Math.random() * 360
+        });
+      }
+
+      let frames = 0;
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pieces.forEach(p => {
+          p.y += p.speedY;
+          p.x += p.speedX;
+          p.rotation += 2;
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.rotation * Math.PI) / 180);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+          ctx.restore();
+        });
+        frames++;
+        if (frames < 120) {
+          requestAnimationFrame(animate);
+        } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      }
+      animate();
+    }
+
+
     document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('headerTitle').textContent = settings.salonName;
       updateTurneroHeaderBadge();
@@ -1935,6 +3003,20 @@
           isPreview: false
         });
       }
+    
+      // Pase de fidelidad y prevencion (?fidelidad=1)
+      if (params.get('fidelidad') === '1') {
+        initClientLoyaltyView({
+          salonName: params.get('s') || settings.salonName || 'Odonto · Dr. Martín',
+          salonPhone: params.get('w') || settings.salonPhone || '',
+          clientName: params.get('c') || 'Paciente',
+          stamps: parseInt(params.get('sellos')) || 0,
+          target: parseInt(params.get('total')) || settings.loyaltyTarget || 3,
+          reward: params.get('premio') || settings.loyaltyReward || 'Limpieza Profunda y Profilaxis Sin Cargo',
+          isPreview: false
+        });
+      }
+
     });
   </script>
 </body>
