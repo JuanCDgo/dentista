@@ -3518,12 +3518,8 @@
         }
 
         let clientDisplay = 'Cliente';
-        const petEl = document.getElementById('bookingPetName');
-        const ownerEl = document.getElementById('bookingOwnerName');
         const clientEl = document.getElementById('bookingClientName');
-        if (petEl && ownerEl) {
-          clientDisplay = petEl.value.trim() + ' (' + ownerEl.value.trim() + ')';
-        } else if (clientEl) {
+        if (clientEl && clientEl.value.trim()) {
           clientDisplay = clientEl.value.trim();
         }
 
