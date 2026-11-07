@@ -91,28 +91,30 @@
       <header class="pt-6 px-5 pb-4 bg-[#F8FAFC] sticky top-0 z-20 border-b border-slate-200/90">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-teal-500 to-cyan-500 p-0.5 shadow-md flex-shrink-0 cursor-pointer" onclick="openProfileModal()">
+            <div class="w-12 h-12 rounded-full ring-2 ring-teal-600/30 p-0.5 shadow-sm flex-shrink-0 cursor-pointer" onclick="openProfileModal()">
               <div id="headerLogoContainer" class="w-full h-full bg-white rounded-full flex items-center justify-center overflow-hidden border border-teal-100">
                 <span class="text-2xl" id="profileAvatar">🦷</span>
               </div>
             </div>
             <div>
               <div class="flex flex-wrap items-center gap-1.5 cursor-pointer" onclick="openProfileModal()">
-                <h1 class="text-xl font-black tracking-tight text-slate-900" id="headerTitle">Odonto · Dr. Martín</h1>
-                <span id="turneroHeaderBadge" class="text-[10px] text-slate-500 bg-slate-200/90 px-2 py-0.5 rounded-full font-bold transition-colors">📅 Turnero OFF</span>
+                <h1 class="text-xl font-bold tracking-tight text-slate-900" id="headerTitle">Odonto · Dr. Martín</h1>
+                <span id="turneroHeaderBadge" class="text-[10px] text-slate-500 bg-slate-200/90 px-2 py-0.5 rounded-full font-bold transition-colors">Turnero OFF</span>
               </div>
               <p class="text-xs font-semibold text-teal-700 tracking-wide flex items-center gap-1.5" id="headerSubtitle">
-                <span>mis pacientes 🦷</span>
+                <span>Consultorio & Turnos</span>
                 <span class="text-slate-300">·</span>
-                <span class="text-[11px] font-medium text-slate-500" id="argClock">🇦🇷 --:-- hs</span>
+                <span class="text-[11px] font-medium text-slate-500" id="argClock">--:-- hs</span>
               </p>
             </div>
           </div>
 
           <div class="flex items-center gap-2">
             <!-- Business QR Modal Button (Cobro Mostrador + Turnero QR) -->
-            <button onclick="openBusinessQrModal()" class="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center text-teal-600 hover:bg-teal-50 active:scale-95 transition-transform shadow-sm" title="Cobrar con QR / QR Turnero">
-              <span class="text-lg">📷</span>
+            <button onclick="openBusinessQrModal()" class="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center text-teal-700 hover:bg-teal-50 active:scale-95 transition-transform shadow-sm" title="Cobrar con QR / QR Turnero">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
+              </svg>
             </button>
 
             <!-- Google Drive Backup Button -->
@@ -123,10 +125,11 @@
               <span id="backupStatusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-white absolute -top-0.5 -right-0.5 hidden"></span>
             </button>
 
-            <!-- Config Button -->
             <!-- Control Manual de Horarios / Agenda -->
-            <button onclick="openOwnerAgendaModal()" class="w-10 h-10 rounded-full bg-white border border-teal-200 flex items-center justify-center text-teal-700 hover:bg-teal-50 active:scale-95 transition-transform shadow-sm" title="Control Manual de Agenda y Horarios (Ocupar / Liberar)">
-              <span class="text-base font-black">📅</span>
+            <button onclick="openOwnerAgendaModal()" class="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center text-teal-700 hover:bg-teal-50 active:scale-95 transition-transform shadow-sm" title="Control Manual de Agenda y Horarios (Ocupar / Liberar)">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
             </button>
 
             <button onclick="openProfileModal()" class="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-50 active:scale-95 transition-transform shadow-sm" title="Ajustes y Turnero">
@@ -172,7 +175,7 @@
           </div>
           <button 
             onclick="openAddModal()" 
-            class="bg-teal-600 hover:bg-teal-700 text-white px-3.5 py-2.5 rounded-xl font-black text-xs shadow-md active:scale-95 transition-all flex items-center gap-1.5 flex-shrink-0"
+            class="bg-teal-600 hover:bg-teal-700 text-white px-3.5 py-2.5 rounded-xl font-semibold text-xs shadow-sm active:scale-95 transition-all flex items-center gap-1.5 flex-shrink-0"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path>
@@ -183,20 +186,17 @@
 
         <!-- Filter Chips (Wrapped so none get cut off) -->
         <div class="flex flex-wrap items-center gap-1.5 mt-3 pt-0.5">
-          <button onclick="setFilter('all')" id="filter-all" class="filter-pill px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap bg-teal-700 text-white transition-all shadow-sm">
+          <button onclick="setFilter('all')" id="filter-all" class="filter-pill px-2.5 py-1 rounded-full text-[11px] font-semibold whitespace-nowrap bg-teal-700 text-white transition-all shadow-sm">
             Todos
           </button>
-          <button onclick="setFilter('due')" id="filter-due" class="filter-pill px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap bg-white text-slate-600 border border-slate-200 transition-all">
-            ⏰ Toca Control
+          <button onclick="setFilter('due')" id="filter-due" class="filter-pill px-2.5 py-1 rounded-full text-[11px] font-semibold whitespace-nowrap bg-white text-slate-600 border border-slate-200 transition-all">
+            Toca Control
           </button>
-          <button onclick="setFilter('ortho')" id="filter-ortho" class="filter-pill px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap bg-white text-slate-600 border border-slate-200 transition-all">
-            💎 Ortodoncia
+          <button onclick="setFilter('ortho')" id="filter-ortho" class="filter-pill px-2.5 py-1 rounded-full text-[11px] font-semibold whitespace-nowrap bg-white text-slate-600 border border-slate-200 transition-all">
+            Ortodoncia
           </button>
-          <button onclick="setFilter('debt')" id="filter-debt" class="filter-pill px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap bg-white text-slate-600 border border-slate-200 transition-all">
-            💵 Con Saldo
-          </button>
-          <button onclick="setFilter('paid')" id="filter-paid" class="filter-pill px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap bg-white text-slate-600 border border-slate-200 transition-all">
-            ✓ Al Día
+          <button onclick="setFilter('debt')" id="filter-debt" class="filter-pill px-2.5 py-1 rounded-full text-[11px] font-semibold whitespace-nowrap bg-white text-slate-600 border border-slate-200 transition-all">
+            Con Saldo
           </button>
         </div>
       </header>
@@ -222,15 +222,15 @@
       <!-- Header del Turnero -->
       <div class="pt-6 px-5 pb-4 bg-white border-b border-slate-200 shadow-sm">
         <div class="flex items-center gap-3">
-          <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-teal-500 to-cyan-500 p-0.5 shadow-md flex-shrink-0">
+          <div class="w-12 h-12 rounded-full ring-2 ring-teal-600/30 p-0.5 shadow-sm flex-shrink-0">
             <div id="bookingLogoContainer" class="w-full h-full bg-white rounded-full flex items-center justify-center overflow-hidden border border-teal-100">
               <span class="text-2xl">🦷</span>
             </div>
           </div>
           <div>
-            <span class="text-[10px] uppercase tracking-wider font-black text-teal-700 bg-teal-100 px-2 py-0.5 rounded-full">Turnero Odontológico</span>
-            <h1 class="text-xl font-black text-slate-900 mt-0.5" id="bookingSalonTitle">Odonto · Dr. Martín</h1>
-            <p class="text-xs text-slate-500">Solicitá tu consulta o control en segundos 🦷</p>
+            <span class="text-[10px] uppercase tracking-wider font-bold text-teal-700 bg-teal-100 px-2 py-0.5 rounded-full">Turnero Odontológico</span>
+            <h1 class="text-xl font-bold text-slate-900 mt-0.5" id="bookingSalonTitle">Odonto · Dr. Martín</h1>
+            <p class="text-xs text-slate-500">Solicitá tu consulta o control en segundos</p>
           </div>
         </div>
       </div>
@@ -326,7 +326,7 @@
       </div>
 
       <!-- Top Accent Bar -->
-      <div class="h-2 w-full bg-gradient-to-r from-teal-500 via-cyan-500 to-teal-600"></div>
+      <div class="h-1.5 w-full bg-teal-600"></div>
 
       <!-- Canvas para confeti animado -->
       <canvas id="loyaltyConfettiCanvas" class="absolute inset-0 pointer-events-none z-30 w-full h-full"></canvas>
@@ -334,36 +334,36 @@
       <div class="p-5 flex-1 flex flex-col justify-between space-y-4 max-w-md mx-auto w-full">
         <!-- Encabezado con Consultorio y Datos -->
         <div class="text-center space-y-1.5 pt-2">
-          <div class="w-16 h-16 rounded-full p-0.5 shadow-lg mx-auto bg-gradient-to-tr from-teal-500 to-cyan-500">
+          <div class="w-16 h-16 rounded-full p-0.5 shadow-sm mx-auto ring-2 ring-teal-600/30">
             <div id="loyaltyLogoContainer" class="w-full h-full bg-white rounded-full flex items-center justify-center overflow-hidden border border-teal-100">
               <span class="text-3xl" id="loyaltyAvatar">🦷</span>
             </div>
           </div>
-          <h1 class="text-xl font-black text-slate-900 tracking-tight" id="loyaltySalonTitle">Odonto · Dr. Martín</h1>
-          <p class="text-[11px] font-bold uppercase tracking-widest text-teal-700 bg-teal-50 px-3 py-1 rounded-full border border-teal-200 inline-block">
+          <h1 class="text-xl font-bold text-slate-900 tracking-tight" id="loyaltySalonTitle">Odonto · Dr. Martín</h1>
+          <p class="text-[11px] font-semibold uppercase tracking-widest text-teal-800 bg-teal-50 px-3 py-1 rounded-full border border-teal-200 inline-block">
             Programa de Salud Bucal & Prevención
           </p>
         </div>
 
         <!-- TARJETA DE SALUD BUCAL PRINCIPAL -->
-        <div class="bg-white rounded-3xl p-5 border-2 border-teal-500/40 shadow-xl relative overflow-hidden space-y-4">
+        <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm relative overflow-hidden space-y-4">
           <!-- Decoración sutil de fondo -->
           <div class="absolute -right-6 -bottom-6 text-8xl text-teal-500/10 select-none pointer-events-none">🦷</div>
 
           <div class="flex items-center justify-between border-b border-slate-100 pb-3">
             <div>
-              <span class="text-[10px] font-black uppercase tracking-wider text-slate-400 block">Pase Oficial</span>
-              <h2 class="text-lg font-black text-teal-900" id="loyaltyClientName">Paciente</h2>
+              <span class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 block">Pase Oficial</span>
+              <h2 class="text-lg font-bold text-slate-900" id="loyaltyClientName">Paciente</h2>
             </div>
             <div class="text-right">
-              <span class="text-[10px] font-black uppercase tracking-wider text-slate-400 block">Controles al Día</span>
-              <span class="text-sm font-black text-teal-800 bg-teal-50 px-2.5 py-0.5 rounded-full border border-teal-200" id="loyaltyStampsRatio">2 / 3</span>
+              <span class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 block">Progreso</span>
+              <span class="text-sm font-bold text-teal-800 bg-teal-50 px-2.5 py-0.5 rounded-full border border-teal-200" id="loyaltyStampsRatio">2 / 3</span>
             </div>
           </div>
 
           <!-- Cuadrícula interactiva de Sellos -->
           <div>
-            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 block mb-2 text-center">Tus controles semestrales</span>
+            <span class="text-[10px] font-semibold uppercase tracking-wider text-slate-500 block mb-2 text-center">Tus controles semestrales</span>
             <div id="loyaltyStampsGrid" class="grid grid-cols-3 gap-2.5 py-1">
               <!-- Se generará dinámicamente -->
             </div>
@@ -372,22 +372,22 @@
           <!-- Barra de progreso -->
           <div class="space-y-1.5 pt-1">
             <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden border border-slate-200">
-              <div id="loyaltyProgressBar" class="h-full bg-gradient-to-r from-teal-500 to-cyan-500 transition-all duration-500 rounded-full" style="width: 66%;"></div>
+              <div id="loyaltyProgressBar" class="h-full bg-teal-600 transition-all duration-500 rounded-full" style="width: 66%;"></div>
             </div>
-            <p class="text-center text-xs font-bold text-slate-600" id="loyaltyProgressHint">¡Llevás 2 controles! Te falta solo 1 para tu beneficio.</p>
+            <p class="text-center text-xs font-medium text-slate-600" id="loyaltyProgressHint">¡Llevás 2 controles! Te falta solo 1 para tu beneficio.</p>
           </div>
 
           <!-- Caja de Premio -->
-          <div id="loyaltyRewardBox" class="bg-teal-50/80 border border-teal-200 rounded-2xl p-3 text-center space-y-0.5">
-            <span class="text-[10px] font-black uppercase tracking-wider text-teal-800 block">★ Tu Beneficio de Prevención</span>
-            <p class="text-xs font-black text-slate-900" id="loyaltyRewardText">Limpieza Profunda y Profilaxis Sin Cargo</p>
+          <div id="loyaltyRewardBox" class="bg-teal-50/60 border border-teal-200/80 rounded-2xl p-3 text-center space-y-0.5">
+            <span class="text-[10px] font-semibold uppercase tracking-wider text-teal-800 block">Beneficio de Prevención</span>
+            <p class="text-xs font-bold text-slate-900" id="loyaltyRewardText">Limpieza Profunda y Profilaxis Sin Cargo</p>
           </div>
 
           <!-- Cartel de Premio Desbloqueado -->
-          <div id="loyaltyUnlockedBox" class="bg-gradient-to-r from-teal-600 to-cyan-600 text-white p-4 rounded-2xl text-center shadow-lg hidden space-y-1 animate-bounce">
+          <div id="loyaltyUnlockedBox" class="bg-teal-700 text-white p-4 rounded-2xl text-center shadow-sm hidden space-y-1">
             <span class="text-2xl block">🎉</span>
-            <h3 class="text-base font-black uppercase tracking-tight">¡OBJETIVO DE SALUD CUMPLIDO!</h3>
-            <p class="text-xs font-bold leading-tight">Completaste tus controles preventivos. Presentá esta pantalla en el consultorio para recibir tu beneficio sin cargo.</p>
+            <h3 class="text-base font-bold uppercase tracking-tight">¡OBJETIVO DE SALUD CUMPLIDO!</h3>
+            <p class="text-xs font-medium leading-tight">Completaste tus controles preventivos. Presentá esta pantalla en el consultorio para recibir tu beneficio sin cargo.</p>
           </div>
         </div>
 
@@ -397,9 +397,9 @@
           <button 
             id="btnClaimRewardWhatsApp" 
             onclick="claimLoyaltyRewardWhatsApp()" 
-            class="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-black text-xs uppercase tracking-wider rounded-2xl shadow-xl hover:from-emerald-600 hover:to-teal-700 transition-all active:scale-[0.98] hidden flex items-center justify-center gap-2"
+            class="w-full py-3.5 bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs uppercase tracking-wider rounded-2xl shadow-sm transition-all active:scale-[0.98] hidden flex items-center justify-center gap-2"
           >
-            <span>★ Canjear Beneficio por WhatsApp</span>
+            <span>Canjear Beneficio por WhatsApp</span>
           </button>
 
           <!-- Botón de agendar próximo turno de control -->
@@ -606,9 +606,9 @@
           id="btnRedeemRewardInModal" 
           type="button" 
           onclick="redeemCurrentClientReward()" 
-          class="w-full py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black text-xs rounded-xl shadow-lg active:scale-95 transition-all flex items-center justify-center gap-1.5 hidden"
+          class="w-full py-2.5 bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs rounded-xl shadow-sm active:scale-95 transition-all flex items-center justify-center gap-1.5 hidden"
         >
-          <span>★ Canjear Beneficio de Prevención (Reiniciar)</span>
+          <span>Canjear Beneficio de Prevención (Reiniciar)</span>
         </button>
       </div>
 
@@ -841,8 +841,8 @@
 
       <div class="space-y-4">
         <!-- Logo / Foto del Consultorio -->
-        <div class="bg-teal-50/60 p-3.5 rounded-2xl border border-teal-200/80 flex items-center gap-3.5">
-          <div class="w-14 h-14 rounded-full bg-gradient-to-tr from-teal-500 to-cyan-500 p-0.5 shadow-md flex-shrink-0">
+        <div class="bg-teal-50/40 p-3.5 rounded-2xl border border-teal-200/80 flex items-center gap-3.5">
+          <div class="w-14 h-14 rounded-full ring-2 ring-teal-600/30 p-0.5 shadow-sm flex-shrink-0">
             <div id="modalLogoPreview" class="w-full h-full bg-white rounded-full flex items-center justify-center overflow-hidden border border-teal-100">
               <span class="text-2xl">🦷</span>
             </div>
@@ -850,8 +850,8 @@
           <div class="flex-1">
             <label class="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1">Logo o Foto del Consultorio</label>
             <div class="flex flex-wrap items-center gap-2">
-              <label class="cursor-pointer bg-white hover:bg-teal-50 text-teal-700 border border-teal-300 px-3 py-1.5 rounded-xl font-bold text-xs shadow-sm transition-all flex items-center gap-1 active:scale-95">
-                <span>📷 Subir Logo</span>
+              <label class="cursor-pointer bg-white hover:bg-teal-50 text-teal-700 border border-teal-300 px-3 py-1.5 rounded-xl font-semibold text-xs shadow-sm transition-all flex items-center gap-1.5 active:scale-95">
+                <span>Subir Foto o Logo</span>
                 <input type="file" id="logoFileInput" accept="image/*" class="hidden" onchange="handleLogoUpload(event)">
               </label>
               <button 
@@ -1084,7 +1084,7 @@
       <div class="bg-teal-50/70 border border-teal-200 rounded-2xl p-4 space-y-3">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-1.5">
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-sm ring-2 ring-emerald-500/20"></span>
             <span class="text-xs font-black uppercase tracking-wider text-teal-950">Google Drive Conectado</span>
           </div>
           <span id="cloudSyncBadge" class="text-[10px] font-black bg-teal-200/80 text-teal-900 px-2 py-0.5 rounded-full">Automático ✓</span>
@@ -1652,6 +1652,25 @@
       renderClients();
     }
 
+    // Normalización de celular argentino (+54 9 ...) para WhatsApp infalible
+    function formatArgentineWhatsApp(rawPhone) {
+      let cleaned = String(rawPhone || '').replace(/\D/g, '');
+      if (!cleaned) return '';
+      if (cleaned.startsWith('549')) return cleaned;
+      if (cleaned.startsWith('54')) {
+        cleaned = cleaned.substring(2);
+        if (!cleaned.startsWith('9')) cleaned = '9' + cleaned;
+        return '54' + cleaned;
+      }
+      if (cleaned.startsWith('15') && cleaned.length === 10) {
+        cleaned = cleaned.substring(2);
+      }
+      if (!cleaned.startsWith('9')) {
+        cleaned = '9' + cleaned;
+      }
+      return '54' + cleaned;
+    }
+
     // WhatsApp Action
     function sendWhatsAppReminder(clientId) {
       const client = clients.find(c => c.id === clientId);
@@ -1671,13 +1690,15 @@
         text += `\n\nPodés elegir tu día y horario acá:\n${bookingUrl}`;
       }
 
-      let phone = (client.phone || '').replace(/[^0-9]/g, '');
+      let phone = formatArgentineWhatsApp(client.phone);
 
       client.lastReminderSent = new Date().toISOString();
       persistData();
       renderClients();
 
-      const waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+      const waUrl = phone
+        ? `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(text)}`
+        : `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
       window.open(waUrl, '_blank');
     }
 
@@ -2195,10 +2216,10 @@
 
       const msg = `¡Hola ${cleanSalon}! Soy *${cleanClient}*.\nQuiero solicitar un turno para atención odontológica:\n\n• *Motivo:* ${srvText}\n• *Día:* ${bookingState.selectedDateLabel}\n• *Horario:* ${bookingState.selectedHour} hs\n\n¿Me confirman disponibilidad? ¡Muchas gracias!`;
 
-      const phone = (bookingState.salonPhone || '').replace(/[^0-9]/g, '');
+      const phone = formatArgentineWhatsApp(bookingState.salonPhone);
       const waUrl = phone 
-        ? `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`
-        : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+        ? `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(msg)}`
+        : `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
       window.open(waUrl, '_blank');
     }
 
@@ -2735,7 +2756,7 @@
       const client = clients.find(c => c.id === currentLoyaltyClientId);
       if (!client) return;
 
-      const phone = (client.phone || '').replace(/[^0-9]/g, '');
+      const phone = formatArgentineWhatsApp(client.phone);
       const passUrl = buildLoyaltyUrl(client);
       const target = settings.loyaltyTarget || 3;
       const stamps = client.stamps || 0;
@@ -2758,7 +2779,7 @@
                   `Cualquier consulta estamos a tu disposicion!`;
 
       if (phone) {
-        window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+        window.open(`https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(msg)}`, '_blank');
       } else {
         alert(msg);
       }
@@ -2822,8 +2843,8 @@
         const isFilled = i <= current;
         const slot = document.createElement('div');
         slot.className = isFilled
-          ? 'aspect-square rounded-2xl bg-gradient-to-tr from-teal-500 to-cyan-500 text-white flex flex-col items-center justify-center shadow-md border border-teal-200 transition-all transform scale-100 hover:scale-105'
-          : 'aspect-square rounded-2xl bg-slate-50 border-2 border-dashed border-slate-200 flex flex-col items-center justify-center text-slate-300';
+          ? 'aspect-square rounded-2xl bg-teal-600 text-white flex flex-col items-center justify-center shadow-sm border border-teal-700 transition-all'
+          : 'aspect-square rounded-2xl bg-slate-50 border border-dashed border-slate-200 flex flex-col items-center justify-center text-slate-300';
 
         slot.innerHTML = isFilled
           ? `<span class="text-2xl drop-shadow">🦷</span><span class="text-[9px] font-black uppercase text-teal-100 tracking-wider">Control ${i}</span>`
@@ -2870,7 +2891,7 @@
 
     function claimLoyaltyRewardWhatsApp() {
       const salon = currentLoyaltyState.salonName || 'Odonto · Dr. Martín';
-      const phone = (currentLoyaltyState.salonPhone || '').replace(/[^0-9]/g, '');
+      const phone = formatArgentineWhatsApp(currentLoyaltyState.salonPhone);
       const client = currentLoyaltyState.clientName || 'Paciente';
       const reward = currentLoyaltyState.reward || 'Limpieza Profunda y Profilaxis Sin Cargo';
 
@@ -2880,7 +2901,7 @@
                   `Tendrias un turno disponible para coordinar mi beneficio: *${reward}*? Muchas gracias!`;
 
       if (phone) {
-        window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+        window.open(`https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(msg)}`, '_blank');
       } else {
         alert(msg);
       }
@@ -2901,11 +2922,11 @@
           isPreview: currentLoyaltyState.isPreview || false
         });
       } else {
-        const phone = (currentLoyaltyState.salonPhone || '').replace(/[^0-9]/g, '');
+        const phone = formatArgentineWhatsApp(currentLoyaltyState.salonPhone);
         const client = currentLoyaltyState.clientName || 'Paciente';
         const msg = `Hola! Soy *${client}*. Queria consultar turnos disponibles para mi proximo control odontologico 🦷.`;
         if (phone) {
-          window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+          window.open(`https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(msg)}`, '_blank');
         } else {
           alert('Por favor contactate con el consultorio para coordinar tu turno.');
         }
@@ -3475,10 +3496,10 @@
         const cleanClient = cleanWhatsAppText(name);
         const msg = `¡Hola ${cleanSalon}! Soy *${cleanClient}*.\n✅ *Ya dejé agendado mi turno en el turnero online:*\n\n• *Servicio:* ${srvText}\n• *Día:* ${bookingState.selectedDateLabel}\n• *Horario:* ${hourStr} hs\n\n¡Muchas gracias!`;
 
-        const phone = (bookingState.salonPhone || '').replace(/[^0-9]/g, '');
+        const phone = formatArgentineWhatsApp(bookingState.salonPhone);
         const waUrl = phone 
-          ? `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`
-          : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+          ? `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(msg)}`
+          : `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
         window.open(waUrl, '_blank');
       };
     } else {
@@ -3537,13 +3558,15 @@
           showToast('¡Horario reservado y bloqueado en la agenda!');
         }
 
-        let phone = (settings.salonPhone || '').replace(/\D/g, '');
+        let phone = formatArgentineWhatsApp(settings.salonPhone);
         const dateFormatted = typeof formatDateAR === 'function' ? formatDateAR(dateStr) : dateStr;
         const detailEl = document.getElementById('bookingServiceDetail');
         const notes = detailEl ? detailEl.value.trim() : '';
         let msg = `¡Hola ${settings.salonName || ''}! Soy ${clientDisplay}.\n✅ *Ya dejé agendado mi turno en el turnero online:*\n\n• Servicio: ${bookingState.selectedService}${notes ? ' (' + notes + ')' : ''}\n• Día: ${dateFormatted}\n• Horario: ${hourStr}\n\n¡Muchas gracias!`;
         msg = typeof cleanWhatsAppText === 'function' ? cleanWhatsAppText(msg) : msg;
-        const waUrl = phone ? `https://wa.me/${phone}?text=${encodeURIComponent(msg)}` : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+        const waUrl = phone 
+          ? `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(msg)}` 
+          : `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
         window.open(waUrl, '_blank');
       };
     }
