@@ -6,7 +6,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="theme-color" content="#F8FAFC">
-  <title>Odonto · Dr. Martín | App de Pacientes</title>
+  <title>Consultorio Odontológico Demo | App de Pacientes</title>
   
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -98,7 +98,7 @@
             </div>
             <div>
               <div class="flex flex-wrap items-center gap-1.5 cursor-pointer" onclick="openProfileModal()">
-                <h1 class="text-xl font-bold tracking-tight text-slate-900" id="headerTitle">Odonto · Dr. Martín</h1>
+                <h1 class="text-xl font-bold tracking-tight text-slate-900" id="headerTitle">Consultorio Odontológico Demo</h1>
                 <span id="turneroHeaderBadge" class="text-[10px] text-slate-500 bg-slate-200/90 px-2 py-0.5 rounded-full font-bold transition-colors">Turnero OFF</span>
               </div>
               <p class="text-xs font-semibold text-teal-700 tracking-wide flex items-center gap-1.5" id="headerSubtitle">
@@ -229,7 +229,7 @@
           </div>
           <div>
             <span class="text-[10px] uppercase tracking-wider font-bold text-teal-700 bg-teal-100 px-2 py-0.5 rounded-full">Turnero Odontológico</span>
-            <h1 class="text-xl font-bold text-slate-900 mt-0.5" id="bookingSalonTitle">Odonto · Dr. Martín</h1>
+            <h1 class="text-xl font-bold text-slate-900 mt-0.5" id="bookingSalonTitle">Consultorio Odontológico Demo</h1>
             <p class="text-xs text-slate-500">Solicitá tu consulta o control en segundos</p>
           </div>
         </div>
@@ -339,7 +339,7 @@
               <span class="text-3xl" id="loyaltyAvatar">🦷</span>
             </div>
           </div>
-          <h1 class="text-xl font-bold text-slate-900 tracking-tight" id="loyaltySalonTitle">Odonto · Dr. Martín</h1>
+          <h1 class="text-xl font-bold text-slate-900 tracking-tight" id="loyaltySalonTitle">Consultorio Odontológico Demo</h1>
           <p class="text-[11px] font-semibold uppercase tracking-widest text-teal-800 bg-teal-50 px-3 py-1 rounded-full border border-teal-200 inline-block">
             Programa de Salud Bucal & Prevención
           </p>
@@ -538,7 +538,7 @@
           <div id="turneroQrCodeContainer" class="p-2 bg-white rounded-xl shadow-inner flex items-center justify-center min-h-[190px] min-w-[190px]">
             <!-- QR Turnero generado con QRCode.js -->
           </div>
-          <p class="text-[11px] font-bold text-slate-700 mt-2" id="turneroQrSalonName">Odonto · Dr. Martín</p>
+          <p class="text-[11px] font-bold text-slate-700 mt-2" id="turneroQrSalonName">Consultorio Odontológico Demo</p>
           <p class="text-[10px] text-slate-400 text-center px-4" id="turneroUrlText">https://juancdgo.github.io/dentista/?reservar=1</p>
         </div>
 
@@ -871,7 +871,7 @@
           <input 
             type="text" 
             id="salonNameInput" 
-            placeholder="Odonto · Dr. Martín" 
+            placeholder="Consultorio Odontológico Demo" 
             class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-teal-500 focus:outline-none text-sm font-bold"
           >
         </div>
@@ -1167,7 +1167,7 @@
       {
         id: '1',
         name: 'Santiago Pérez',
-        phone: '5491138291044',
+        phone: '5491100000001',
         treatment: 'Ortodoncia',
         toothArea: 'Bimaxilar',
         medicalAlert: 'Sin alergias conocidas',
@@ -1181,7 +1181,7 @@
       {
         id: '2',
         name: 'Valentina Rossi',
-        phone: '5491159382019',
+        phone: '5491100000002',
         treatment: 'Limpieza y Control',
         toothArea: 'General',
         medicalAlert: '',
@@ -1195,7 +1195,7 @@
       {
         id: '3',
         name: 'Mariano Gómez',
-        phone: '5491147289102',
+        phone: '5491100000003',
         treatment: 'Conducto / Endodoncia',
         toothArea: 'Pieza 36',
         medicalAlert: 'Alergia a la Penicilina',
@@ -1209,7 +1209,7 @@
       {
         id: '4',
         name: 'Camila Benítez',
-        phone: '5491168492011',
+        phone: '5491100000004',
         treatment: 'Blanqueamiento',
         toothArea: 'Sector anterior',
         medicalAlert: 'Sensibilidad al frío',
@@ -1227,7 +1227,7 @@
     const AUTO_DRIVE_FOLDER_ID = '1JA9LIV_oQJBBDI1KDqKVbHbouUlFZDz2';
 
     const DEFAULT_SETTINGS = {
-      salonName: 'Odonto · Dr. Martín',
+      salonName: 'Consultorio Odontológico Demo',
       salonLogo: '',
       template: '¡Hola {nombre}! Ya pasaron {semanas} semanas de tu {servicio}, ¿te reservo turno para tu control odontológico?',
       driveWebhookUrl: AUTO_DRIVE_WEBHOOK,
@@ -1235,7 +1235,7 @@
       autoSyncDrive: true,
       lastBackupDate: null,
       bookingEnabled: false,
-      salonPhone: '5491122334455',
+      salonPhone: '5491100000000',
       workDays: [1, 2, 3, 4, 5], // Lun a Vie
       bookingStartHour: 9,
       bookingEndHour: 19,
@@ -1281,7 +1281,7 @@
     // Booking view state
     let tempWorkDays = [...settings.workDays];
     let bookingState = {
-      salonName: 'Odonto · Dr. Martín',
+      salonName: 'Consultorio Odontológico Demo',
       salonPhone: '',
       workDays: [1, 2, 3, 4, 5],
       startHour: 9,
@@ -1925,7 +1925,7 @@
         return;
       }
 
-      settings.salonName = document.getElementById('salonNameInput').value.trim() || 'Odonto · Dr. Martín';
+      settings.salonName = document.getElementById('salonNameInput').value.trim() || 'Consultorio Odontológico Demo';
       settings.template = document.getElementById('messageTemplateInput').value.trim() || DEFAULT_SETTINGS.template;
       settings.bookingEnabled = enabled;
       settings.salonPhone = phone;
@@ -1980,7 +1980,7 @@
       const baseUrl = window.location.origin + window.location.pathname;
       const params = new URLSearchParams();
       params.set('reservar', '1');
-      params.set('s', settings.salonName || 'Odonto · Dr. Martín');
+      params.set('s', settings.salonName || 'Consultorio Odontológico Demo');
       params.set('w', (settings.salonPhone || '').replace(/[^0-9]/g, ''));
       params.set('d', (settings.workDays || [1,2,3,4,5]).join(','));
       params.set('h', `${settings.bookingStartHour || 9}-${settings.bookingEndHour || 19}-${settings.bookingSlotMinutes || 45}`);
@@ -2002,7 +2002,7 @@
     }
 
     function copyPublicBookingLink() {
-      settings.salonName = document.getElementById('salonNameInput').value.trim() || 'Odonto · Dr. Martín';
+      settings.salonName = document.getElementById('salonNameInput').value.trim() || 'Consultorio Odontológico Demo';
       settings.salonPhone = document.getElementById('salonPhoneInput').value.trim().replace(/[^0-9]/g, '');
       settings.workDays = [...tempWorkDays].sort();
       settings.bookingStartHour = Number(document.getElementById('bookingStartHour').value) || 9;
@@ -2019,8 +2019,8 @@
     }
 
     function previewClientBooking() {
-      settings.salonName = document.getElementById('salonNameInput').value.trim() || 'Odonto · Dr. Martín';
-      settings.salonPhone = document.getElementById('salonPhoneInput').value.trim().replace(/[^0-9]/g, '') || '5491122334455';
+      settings.salonName = document.getElementById('salonNameInput').value.trim() || 'Consultorio Odontológico Demo';
+      settings.salonPhone = document.getElementById('salonPhoneInput').value.trim().replace(/[^0-9]/g, '') || '5491100000000';
       settings.workDays = [...tempWorkDays].sort();
       settings.bookingStartHour = Number(document.getElementById('bookingStartHour').value) || 9;
       settings.bookingEndHour = Number(document.getElementById('bookingEndHour').value) || 19;
@@ -2050,7 +2050,7 @@
     }
 
     function initClientBookingView(cfg) {
-      bookingState.salonName = cfg.salonName || 'Odonto · Dr. Martín';
+      bookingState.salonName = cfg.salonName || 'Consultorio Odontológico Demo';
       bookingState.salonPhone = cfg.salonPhone || '';
       bookingState.workDays = cfg.workDays && cfg.workDays.length ? cfg.workDays : [1, 2, 3, 4, 5];
       bookingState.startHour = cfg.startHour || 9;
@@ -2491,7 +2491,7 @@
       const holderEl = document.getElementById('cobroDisplayHolder');
       if (holderEl) holderEl.textContent = holder;
       const salonNameEl = document.getElementById('turneroQrSalonName');
-      if (salonNameEl) salonNameEl.textContent = settings.salonName || 'Odonto · Dr. Martín';
+      if (salonNameEl) salonNameEl.textContent = settings.salonName || 'Consultorio Odontológico Demo';
 
       const bookingUrl = buildBookingUrl(null);
       const urlTextEl = document.getElementById('turneroUrlText');
@@ -2661,7 +2661,7 @@
       params.set('sellos', client.stamps || 0);
       params.set('total', settings.loyaltyTarget || 3);
       params.set('premio', settings.loyaltyReward || 'Limpieza Profunda y Profilaxis Sin Cargo');
-      params.set('s', settings.salonName || 'Odonto · Dr. Martín');
+      params.set('s', settings.salonName || 'Consultorio Odontológico Demo');
       params.set('w', (settings.salonPhone || '').replace(/[^0-9]/g, ''));
       return `${base}?${params.toString()}`;
     }
@@ -2792,7 +2792,7 @@
 
       closeClientLoyaltyModal();
       initClientLoyaltyView({
-        salonName: settings.salonName || 'Odonto · Dr. Martín',
+        salonName: settings.salonName || 'Consultorio Odontológico Demo',
         salonPhone: settings.salonPhone || '',
         clientName: client.name,
         stamps: client.stamps || 0,
@@ -2822,7 +2822,7 @@
         previewBanner.classList.add('hidden');
       }
 
-      document.getElementById('loyaltySalonTitle').textContent = config.salonName || 'Odonto · Dr. Martín';
+      document.getElementById('loyaltySalonTitle').textContent = config.salonName || 'Consultorio Odontológico Demo';
       document.getElementById('loyaltyClientName').textContent = config.clientName || 'Paciente';
       document.getElementById('loyaltyRewardText').textContent = config.reward || 'Limpieza Profunda y Profilaxis Sin Cargo';
 
@@ -2890,7 +2890,7 @@
     }
 
     function claimLoyaltyRewardWhatsApp() {
-      const salon = currentLoyaltyState.salonName || 'Odonto · Dr. Martín';
+      const salon = currentLoyaltyState.salonName || 'Consultorio Odontológico Demo';
       const phone = formatArgentineWhatsApp(currentLoyaltyState.salonPhone);
       const client = currentLoyaltyState.clientName || 'Paciente';
       const reward = currentLoyaltyState.reward || 'Limpieza Profunda y Profilaxis Sin Cargo';
@@ -2910,7 +2910,7 @@
     function loyaltyBookNextTurn() {
       if (settings.bookingEnabled) {
         initClientBookingView({
-          salonName: currentLoyaltyState.salonName || settings.salonName || 'Odonto · Dr. Martín',
+          salonName: currentLoyaltyState.salonName || settings.salonName || 'Consultorio Odontológico Demo',
           salonPhone: currentLoyaltyState.salonPhone || settings.salonPhone || '',
           workDays: settings.workDays || [1,2,3,4,5],
           startHour: settings.bookingStartHour || 9,
@@ -3016,7 +3016,7 @@
 
         const hoursParam = (params.get('h') || '9-19-45').split('-');
         initClientBookingView({
-          salonName: params.get('s') || settings.salonName || 'Odonto · Dr. Martín',
+          salonName: params.get('s') || settings.salonName || 'Consultorio Odontológico Demo',
           salonPhone: params.get('w') || settings.salonPhone || '',
           workDays: parsedDays.length ? parsedDays : [1, 2, 3, 4, 5],
           startHour: Number(hoursParam[0]) || 9,
@@ -3032,7 +3032,7 @@
       // Pase de fidelidad y prevencion (?fidelidad=1)
       if (params.get('fidelidad') === '1') {
         initClientLoyaltyView({
-          salonName: params.get('s') || settings.salonName || 'Odonto · Dr. Martín',
+          salonName: params.get('s') || settings.salonName || 'Consultorio Odontológico Demo',
           salonPhone: params.get('w') || settings.salonPhone || '',
           clientName: params.get('c') || 'Paciente',
           stamps: parseInt(params.get('sellos')) || 0,
